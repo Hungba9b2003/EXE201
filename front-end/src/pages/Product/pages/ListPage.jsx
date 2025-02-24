@@ -89,12 +89,12 @@ function ListPage(props) {
                     />
                 </div>
                 <div className='wrapper__product__productList'>
-                    <div className='wrapper__product__productList_type'>
+                    {/* <div className='wrapper__product__productList_type'>
                         <ProductType
                             filters={queryParams}
                             onChange={handleCategoryChange}
                         />
-                    </div>
+                    </div> */}
                     <div
                         className='wrapper__product__productList__filterViewer'
                         style={{ display: 'flex', marginBottom: '10px' }}
