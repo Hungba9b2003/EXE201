@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import '../AboutCompany/style.scss';
 
 function AboutCompany(props) {
@@ -56,7 +56,7 @@ function AboutCompany(props) {
                         <div className='aban2__img'>
                             <div className='aban2__box'>
                                 <img
-                                    src='https://curnonwatch.com/wp-content/uploads/2024/04/ANN_8573-Edit.jpg'
+                                    src='https://scontent.fhan2-3.fna.fbcdn.net/v/t39.30808-6/480681922_122111190902740157_4220105789282415779_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeF60pWf8v-WE83FYasF1nlfBIWxur4qe1QEhbG6vip7VN2U--c81Au9CcF8Plgs-q-dm6oJZuIev7K08tD_LL5A&_nc_ohc=j1Up9NOGFh0Q7kNvgF10Yfg&_nc_oc=Adhf1dbxLC_lFOsiPc-Xzl9J5A9_kqx5DUxWETxPehtfhO6JoSeMn3wSkChrQgpAbIU&_nc_zt=23&_nc_ht=scontent.fhan2-3.fna&_nc_gid=A0pFgbVjm5dBu9lPDbBFOTV&oh=00_AYBNyWZlxjb7V22RRSF--HZdTWcFalSBaj034kVvoOJ64w&oe=67C42F66'
                                     alt=''
                                 />
                             </div>
@@ -82,7 +82,7 @@ function AboutCompany(props) {
                             >
                                 <img
                                     style={{ height: 'fitContent' }}
-                                    src='https://curnonwatch.com/wp-content/uploads/2024/04/8_310076-Edit.jpeg'
+                                    src='https://cdn.tgdd.vn/Files/2021/04/19/1344707/top-dia-chi-shop-ban-quan-ao-cho-cho-meo-dep-de-thuong-nhat-202104191853258895.jpg'
                                     alt=''
                                 />
                             </div>

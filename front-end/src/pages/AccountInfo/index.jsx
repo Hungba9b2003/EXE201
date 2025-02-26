@@ -1,11 +1,4 @@
-import {
-    Box,
-    Container,
-    Grid,
-    makeStyles,
-    Paper,
-    useTheme
-} from '@material-ui/core';
+import { Box, Container, Grid, makeStyles, Paper, useTheme } from '@material-ui/core';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
@@ -154,7 +147,7 @@ function AccountInfo() {
 
     return (
         <Box className={classes.root}>
-            <Container style={{ marginTop: '120px', width: '1072px' }}>
+            <Container style={{ marginTop: '180px', width: '1072px' }}>
                 <Paper
                     elevation={0}
                     className={classes.paper}

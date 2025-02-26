@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, Res } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+// import { InjectModel } from '@nestjs/mongoose';
+// import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterUserDto } from '../dto/register-user.dto';
@@ -8,8 +8,9 @@ import { LoginUserDto } from '../dto/login.dto';
 import { AuthRepository } from '../repository/auth.repository';
 import { Response } from 'express';
 import { User } from '../schemas/user.schema';
-require('dotenv').config();
-
+// require('dotenv').config();
+import * as dotenv from 'dotenv';
+dotenv.config();
 @Injectable()
 export class AuthService {
   constructor(
@@ -74,7 +75,7 @@ export class AuthService {
     }
     const hashedPassword = await this.haspassword(registerUserDto.password);
 
-    const newUser = await this.authRepository.createUser({
+    await this.authRepository.createUser({
       ...registerUserDto,
       password: hashedPassword,
     });

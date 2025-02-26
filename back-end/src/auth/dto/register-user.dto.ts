@@ -10,7 +10,6 @@ export class RegisterUserDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
-  @MaxLength(16)
   displayName: string;
 
   @IsString()

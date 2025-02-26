@@ -1,5 +1,5 @@
 import { Box, makeStyles, Modal, Typography } from '@material-ui/core';
-import { Button, Form, Input } from 'antd';
+import { Button } from 'antd';
 import { enqueueSnackbar } from 'notistack';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -11,32 +11,35 @@ import userApi from '../../../api/userApi';
 import { discountPercentage, formatPrice } from '../../../utils/common';
 import { addToCart } from '../../Cart/cartSlice';
 
-
 ProductInfo.propTypes = {
     product: PropTypes.object,
 };
 
 const useStyles = makeStyles((theme) => ({
     root: {
+        marginTop: theme.spacing(3),
         paddingBottom: theme.spacing(2),
         borderBottom: `1px solid ${theme.palette.grey[300]}`,
+    },
+    dialSize: {
+        marginTop: theme.spacing(3), // Thêm khoảng cách phía trên
+        display: 'flex',
+        alignItems: 'center',
     },
     name: {
         fontWeight: '700',
         fontFamily: 'monospace',
     },
-    descriptionBox:{
+    descriptionBox: {
         fontFamily: 'monospace',
-
-
     },
-    descriptionTitle:{
-        fontWeight: "800",
+    descriptionTitle: {
+        fontWeight: '800',
         fontFamily: 'monospace',
         fontSize: '20px',
         // borderBottom: `1px solid ${theme.palette.grey[300]}`,
         borderTop: `1px solid ${theme.palette.grey[300]}`,
-        marginTop:'10px'
+        marginTop: '10px',
     },
     description: {
         fontFamily: 'monospace',
@@ -64,12 +67,6 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '18px',
         fontFamily: 'monospace',
         fontWeight: '500',
-    },
-    dialSize: {
-        display: 'flex',
-        marginTop: '10px',
-        borderBottom: `1px solid ${theme.palette.grey[300]}`,
-        margin: ' 15px 0px',
     },
     sizeName: {
         justifyContent: 'conter',
@@ -105,8 +102,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function ProductInfo({ product = {} }) {
+    const [selectedSize, setSelectedSize] = useState('');
     const classes = useStyles();
-    const { name, description, salePrice, originalPrice, dialSize, _id , images } = product;
+    const { name, description, salePrice, originalPrice, _id, images } = product;
     const userId = localStorage.getItem('userId');
     const promotionPercent = discountPercentage(originalPrice, salePrice);
     const [openModal, setOpenModal] = useState(false);
@@ -114,14 +112,13 @@ function ProductInfo({ product = {} }) {
     const dispatch = useDispatch();
     const [userInfo, setUserInfo] = useState([]);
     const shippingInfo = {
-        receiver:userInfo.displayName,
-        phone:userInfo.contactPhone,
-        address:userInfo.address,
-        addressDetail:userInfo.addressDetail,
-        isInCart: false
+        receiver: userInfo.displayName,
+        phone: userInfo.contactPhone,
+        address: userInfo.address,
+        addressDetail: userInfo.addressDetail,
+        isInCart: false,
     };
     const [error, setError] = useState('');
-
 
     // Fake data for test pay now
     // ============================================================================================================================
@@ -133,9 +130,10 @@ function ProductInfo({ product = {} }) {
     //     isInCart: false
     // }
     // ============================================================================================================================
-
-
-    useEffect(()=>{
+    const handleSizeChange = (size) => {
+        setSelectedSize(size);
+    };
+    useEffect(() => {
         if (!userId) {
             setError('No user ID found in local storage');
             return;
@@ -150,8 +148,7 @@ function ProductInfo({ product = {} }) {
         })();
     }, [userId]);
 
-
-    // Payload add to cart 
+    // Payload add to cart
     // ============================================================================================================================
     const productId = _id ? _id.toString() : '';
     const quantity = 1;
@@ -168,22 +165,21 @@ function ProductInfo({ product = {} }) {
                 id: product._id,
                 product,
                 quantity: 1,
-              });
-              dispatch(action);
+            });
+            dispatch(action);
             enqueueSnackbar('Đã thêm vào giỏ hàng  ', { variant: 'success' });
         } catch (error) {
             console.error('Add to cart failed:', error);
             enqueueSnackbar('Đã xảy ra lỗi ! ', { variant: 'error' });
         }
     };
-    
 
     // Payload pay now
     // ============================================================================================================================
-    const price = salePrice
-    const urlImage = images[0]
-    const products  = [{ productId , price , quantity ,urlImage}]
-    const payloadPay = {userId , products , shippingInfo}
+    const price = salePrice;
+    const urlImage = images[0];
+    const products = [{ productId, price, quantity, urlImage }];
+    const payloadPay = { userId, products, shippingInfo };
     // ============================================================================================================================
     const handleBuyNow = async () => {
         if (!userId) {
@@ -193,7 +189,6 @@ function ProductInfo({ product = {} }) {
         try {
             const req = await orderApi.add(payloadPay);
             navigate(`/orders?id=${req.orderExist._id}`);
-    
         } catch (error) {
             enqueueSnackbar('Đã xảy ra lỗi! Vui lòng thử lại sau.', { variant: 'error' });
         }
@@ -202,9 +197,8 @@ function ProductInfo({ product = {} }) {
         setOpenModal(false);
     };
     const handleNavigate = () => {
-        navigate('/login')
-    }
-
+        navigate('/login');
+    };
 
     return (
         <Box className={classes.root}>
@@ -242,17 +236,32 @@ function ProductInfo({ product = {} }) {
                 )}
             </Box>
             {/* Box chọn size mặt đồng hồ */}
-            <Box className={classes.dialSize}>
-                <Typography className={classes.sizeName}>Kích thước mặt:</Typography>
-                <Box className={classes.size}>
-                    <Form style={{ maxWidth: 40, marginLeft: '10px' }}>
-                        <Form.Item>
-                            <Input
-                                value={dialSize}
-                                placeholder='Enter dial size'
-                            />
-                        </Form.Item>
-                    </Form>
+            <Box className='dialSize'>
+                <Typography className='sizeName'>Size:</Typography>
+                <Box
+                    className='size'
+                    style={{ display: 'flex', gap: '10px', marginTop: '10px' }}
+                >
+                    {product.sizes?.map((item) => (
+                        <Button
+                            key={item.size}
+                            variant={selectedSize === item.size ? 'contained' : 'outlined'}
+                            color='primary'
+                            disabled={item.quantity === 0}
+                            onClick={() => handleSizeChange(item.size)}
+                            style={{
+                                minWidth: '50px',
+                                textTransform: 'none',
+                                backgroundColor: selectedSize === item.size ? '#000' : '#fff',
+                                color: selectedSize === item.size ? '#fff' : '#000',
+                                border: item.quantity === 0 ? '1px solid #aaa' : '1px solid #000',
+                                opacity: item.quantity === 0 ? 0.5 : 1,
+                                cursor: item.quantity === 0 ? 'not-allowed' : 'pointer',
+                            }}
+                        >
+                            {item.size}
+                        </Button>
+                    ))}
                 </Box>
             </Box>
             {/* Box chọn Mua ngay hoặc add to cart */}
@@ -260,10 +269,10 @@ function ProductInfo({ product = {} }) {
                 <Button
                     type='primary'
                     onClick={handleBuyNow}
-                    style={{ 
-                        marginRight: '10px', 
-                        background: 'black' ,
-                        borderRadius: '0px' ,
+                    style={{
+                        marginRight: '10px',
+                        background: 'black',
+                        borderRadius: '0px',
                         fontFamily: 'monospace',
                     }}
                 >
@@ -278,7 +287,7 @@ function ProductInfo({ product = {} }) {
                         color: 'black',
                         border: '1px solid black',
                         fontWeight: 'bold',
-                        borderRadius: '0px' ,
+                        borderRadius: '0px',
                         fontFamily: 'monospace',
                     }}
                 >
@@ -288,29 +297,21 @@ function ProductInfo({ product = {} }) {
             {/* Box chính sách mua hàng  */}
             <Box>
                 <Box className={classes.policy}>
-                    <box-icon name='refresh' ></box-icon>
-                    <Box component='span'>
-                        ĐỔI TRẢ MIỄN PHÍ trong 3 ngày (Với lỗi từ Nhà sản xuất)
-                    </Box>
+                    <box-icon name='refresh'></box-icon>
+                    <Box component='span'>ĐỔI TRẢ MIỄN PHÍ trong 15 ngày</Box>
                 </Box>
                 <Box className={classes.policy}>
-                    <box-icon name='package' ></box-icon>
+                    <box-icon name='package'></box-icon>
                     <Box component='span'>FREE SHIPPING đơn hàng &gt; 500K</Box>
                 </Box>
                 <Box className={classes.policy}>
-                    <box-icon name='check-shield' ></box-icon>
-                    <Box component='span'>
-                        BẢO HÀNH trong 10 năm với sản phẩm Đồng Hồ (do kĩ thuật viên kiểm định)
-                    </Box>
+                    <box-icon name='check-shield'></box-icon>
+                    <Box component='span'>Lỗi 1 đổi 1 (Với lỗi từ Nhà sản xuất)</Box>
                 </Box>
             </Box>
             {/* Box thông tin sản phẩm  */}
             <Box className={classes.descriptionBox}>
-                <Typography
-                    className={classes.descriptionTitle}
-                >
-                    THÔNG TIN
-                </Typography>
+                <Typography className={classes.descriptionTitle}>THÔNG TIN</Typography>
                 <Typography
                     variant='body2'
                     className={classes.description}
@@ -325,12 +326,44 @@ function ProductInfo({ product = {} }) {
                 aria-describedby='modal-description'
             >
                 <div className={classes.modal}>
-                    <Typography variant='h5' id='modal-title' style={{fontFamily: 'monospace',}}>
-                        Vui lòng đăng nhập để tiếp tục 
+                    <Typography
+                        variant='h5'
+                        id='modal-title'
+                        style={{ fontFamily: 'monospace' }}
+                    >
+                        Vui lòng đăng nhập để tiếp tục
                     </Typography>
-                    <Box style={{display: "flex",justifyContent: "space-between" , marginTop:'10px'}}>
-                        <Button style={{ borderRadius: '0px' ,height:'32px',width:'100px',fontFamily: 'monospace',}} onClick={handleCloseModal}>Đóng</Button>
-                        <Button style={{ borderRadius: '0px' ,height:'32px',width:'100px' , background:'black',color:'#fff',fontFamily: 'monospace',}} onClick={handleNavigate}>Đăng nhập</Button>
+                    <Box
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            marginTop: '10px',
+                        }}
+                    >
+                        <Button
+                            style={{
+                                borderRadius: '0px',
+                                height: '32px',
+                                width: '100px',
+                                fontFamily: 'monospace',
+                            }}
+                            onClick={handleCloseModal}
+                        >
+                            Đóng
+                        </Button>
+                        <Button
+                            style={{
+                                borderRadius: '0px',
+                                height: '32px',
+                                width: '100px',
+                                background: 'black',
+                                color: '#fff',
+                                fontFamily: 'monospace',
+                            }}
+                            onClick={handleNavigate}
+                        >
+                            Đăng nhập
+                        </Button>
                     </Box>
                 </div>
             </Modal>

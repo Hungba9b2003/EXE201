@@ -16,7 +16,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { Form, Formik } from 'formik';
-import { enqueueSnackbar } from "notistack";
+import { enqueueSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -78,9 +78,9 @@ const OrderPage = () => {
 
     const handleBuyNow = async (values) => {
         const { paymentMethod } = values;
-        if (paymentMethod==='cash') {
-            enqueueSnackbar("Đặt hàng thành công ",{variant:"success"})
-            navigate('/success-page')
+        if (paymentMethod === 'cash') {
+            enqueueSnackbar('Đặt hàng thành công ', { variant: 'success' });
+            navigate('/success-page');
         }
         try {
             const res = await orderApi.payment(orderId, paymentMethod);
@@ -125,7 +125,7 @@ const OrderPage = () => {
         }
     }, [orderId]);
     return (
-        <Box style={{ marginTop: '100px' }}>
+        <Box style={{ marginTop: '180px' }}>
             <Container style={{ marginTop: '120px', width: '1072px' }}>
                 <Paper
                     elevation={0}
@@ -133,7 +133,7 @@ const OrderPage = () => {
                 >
                     <Grid className={classes.container}>
                         <Box className={classes.address}>
-                            <Box style={{display:'flex',justifyContent:"space-between"}}>
+                            <Box style={{ display: 'flex', justifyContent: 'space-between' }}>
                                 <Typography
                                     component='h3'
                                     variant='h7'
@@ -145,7 +145,12 @@ const OrderPage = () => {
                                     variant='outlined'
                                     color='black'
                                     onClick={handleOpenDialog}
-                                    style={{border: 'none' ,textDecoration: 'underline',padding: '0px',margin: '0px'}}
+                                    style={{
+                                        border: 'none',
+                                        textDecoration: 'underline',
+                                        padding: '0px',
+                                        margin: '0px',
+                                    }}
                                 >
                                     Thay đổi địa chỉ nhận hàng
                                 </Button>
@@ -176,7 +181,6 @@ const OrderPage = () => {
                                     {shippingInfo.address}
                                 </Typography>
                             </Box>
-
                         </Box>
                     </Grid>
                 </Paper>
@@ -366,9 +370,7 @@ const OrderPage = () => {
                                     onSubmit={handleBuyNow}
                                 >
                                     {({ values, handleChange, handleBlur, handleSubmit }) => (
-                                        <Form 
-                                            onSubmit={handleSubmit}
-                                        >
+                                        <Form onSubmit={handleSubmit}>
                                             <Box sx={{ padding: 2 }}>
                                                 <FormControl component='fieldset'>
                                                     <RadioGroup
@@ -441,7 +443,7 @@ const OrderPage = () => {
                                                     border: '1px solid black',
                                                     margin: '15px',
                                                     borderRadius: '0px',
-                                                    padding:'5px 15px'
+                                                    padding: '5px 15px',
                                                 }}
                                             >
                                                 Đặt hàng
@@ -461,17 +463,23 @@ const OrderPage = () => {
                 url={paymentUrl}
                 orderId={orderId}
             />
-            <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+            <Dialog
+                open={isDialogOpen}
+                onClose={handleCloseDialog}
+            >
                 <DialogTitle>Thay đổi địa chỉ nhận hàng</DialogTitle>
                 <DialogContent>
-                    <UpdateShippingInfo 
-                        shippingInfo={shippingInfo} 
-                        setShippingInfo={setShippingInfo} 
-                        onClose={handleCloseDialog} 
+                    <UpdateShippingInfo
+                        shippingInfo={shippingInfo}
+                        setShippingInfo={setShippingInfo}
+                        onClose={handleCloseDialog}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDialog} color="black">
+                    <Button
+                        onClick={handleCloseDialog}
+                        color='black'
+                    >
                         Đóng
                     </Button>
                 </DialogActions>

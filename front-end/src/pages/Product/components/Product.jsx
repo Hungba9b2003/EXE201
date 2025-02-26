@@ -12,11 +12,11 @@ function Product({ product }) {
         navigate(`/products/${product._id}`);
     };
 
-    const thumbnailUrl = product.images[0] 
+    const thumbnailUrl = product.images[0]
         ? `${product.images[0]}`
         : 'https://via.placeholder.com/444';
 
-    const thumbnailUrl2 = product.images[1] 
+    const thumbnailUrl2 = product.images[1]
         ? `${product.images[1]}`
         : 'https://via.placeholder.com/444';
 
@@ -31,16 +31,19 @@ function Product({ product }) {
                 boxShadow: 'none',
                 border: 'none',
                 width: '100%',
-                height: '420px',
+                height: '420px', // Đảm bảo chiều cao đồng bộ
                 borderRadius: '0px',
                 position: 'relative',
-                cursor: "pointer"
+                cursor: 'pointer',
+                overflow: 'hidden', // Đảm bảo ảnh không bị lấn ra ngoài
             }}
             onClick={handleClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <Box style={{ position: 'relative', width: '100%', height: '422px' }}>
+            <Box
+                style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}
+            >
                 {promotionPercent > 0 && (
                     <Box
                         style={{
@@ -53,8 +56,7 @@ function Product({ product }) {
                             borderRadius: '0px',
                             fontWeight: '600',
                             zIndex: 1,
-                            // width:'56px',
-                            display:'flex',
+                            display: 'flex',
                             justifyContent: 'center',
                         }}
                     >
@@ -67,14 +69,17 @@ function Product({ product }) {
                     image={isHovered ? thumbnailUrl2 : thumbnailUrl}
                     style={{
                         width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
+                        height: '100%', // Tràn toàn bộ khung
+                        objectFit: 'cover', // Đảm bảo ảnh không méo
                         transition: 'transform 0.3s ease',
                         transform: isHovered ? 'scale(1.05)' : 'scale(1)',
                     }}
                 />
             </Box>
-            <CardContent sx={{ flexGrow: 1 }} style={{ margin: '0', padding: '0', paddingTop: "10px" }}>
+            <CardContent
+                sx={{ flexGrow: 1 }}
+                style={{ margin: '0', padding: '0', paddingTop: '10px' }}
+            >
                 <Typography
                     variant='h6'
                     component='div'
@@ -96,7 +101,7 @@ function Product({ product }) {
                         alignItems: 'center',
                         background: 'transparent',
                         margin: '0',
-                        padding: '0'
+                        padding: '0',
                     }}
                 >
                     <Box>
@@ -104,29 +109,28 @@ function Product({ product }) {
                             variant='h6'
                             component='div'
                             style={{
-                                marginRight: '12px',
                                 fontWeight: 'bold',
                                 color: '#333',
                                 fontFamily: 'monospace',
                                 fontSize: '1rem',
                             }}
                         >
-                            {formatPrice(product.salePrice)}
-                        </Typography>
-                    </Box>
-                    <Box>
-                        <Typography
-                            variant='body2'
-                            component='div'
-                            style={{
-                                color: '#808089',
-                                textDecoration: 'line-through',
-                                fontSize: '0.875rem',
-                                fontFamily: 'monospace',
-                            }}
-                        >
                             {formatPrice(product.originalPrice)}
                         </Typography>
+                        {product.salePrice < product.originalPrice && (
+                            <Typography
+                                variant='body2'
+                                component='div'
+                                style={{
+                                    color: '#808089',
+                                    textDecoration: 'line-through',
+                                    fontSize: '0.875rem',
+                                    fontFamily: 'monospace',
+                                }}
+                            >
+                                {formatPrice(product.originalPrice)}
+                            </Typography>
+                        )}
                     </Box>
                 </Box>
             </CardContent>

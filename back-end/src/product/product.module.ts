@@ -12,7 +12,7 @@ import { Product, ProductSchema } from './schema/product.shema';
 import { TypeService } from 'src/type/service/type.service';
 import { TypeModule } from 'src/type/type.module';
 import { TypeRepository } from 'src/type/repository/type.repository';
-import { Type, TypeSchema } from 'src/type/schema/type.shema';
+import { Type, TypeSchema } from '../type/schema/type.shema';
 import { CheckPermissionMiddleware } from 'src/middlewares/checkPermission.middleware';
 import { UserModule } from 'src/user/user.module';
 

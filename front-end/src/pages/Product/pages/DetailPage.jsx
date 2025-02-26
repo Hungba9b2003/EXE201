@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Route, Routes, useParams } from 'react-router-dom';
 import ProductAdditional from '../components/ProductAdditional';
 import ProductDescription from '../components/ProductDescription';
+import ProductPolicyReturn from '../components/ProductPolicyReturn';
 import ProductInfo from '../components/ProductInfo';
 import ProductMenu from '../components/ProductMenu';
 import ProductReviews from '../components/ProductReviews';
@@ -32,6 +33,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
     },
     info: {
+        // marginTop: theme.spacing(3),
         flexBasis: '55%',
         display: 'flex',
         flexDirection: 'column',
@@ -90,13 +92,13 @@ function DetailPage() {
             setReviews([...reviews, data]);
         } catch (error) {
             console.error('Error adding review:', error);
-            enqueueSnackbar("Bạn chưa từng mua sản phẩm này trước đây",{variant:'error'});
+            enqueueSnackbar('Bạn chưa từng mua sản phẩm này trước đây', { variant: 'error' });
         }
     };
 
     return (
         <Box className={classes.root}>
-            <Container>
+            <Container style={{ marginTop: '60px' }}>
                 <Paper
                     elevation={0}
                     className={classes.paper}
@@ -138,6 +140,10 @@ function DetailPage() {
                     <Route
                         path='reviews'
                         element={<ProductReviews onSubmitReview={handleAddReview} />}
+                    />
+                    <Route
+                        path='policyReturn'
+                        element={<ProductPolicyReturn />}
                     />
                 </Routes>
             </Container>

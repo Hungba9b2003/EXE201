@@ -9,53 +9,16 @@ import {
     Paper,
     TextField,
     Typography,
-    useTheme,
 } from '@material-ui/core';
 import { Formik, Field, Form } from 'formik';
 import * as Yup from 'yup';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { useSnackbar } from 'notistack';
 import userApi from '../../../api/userApi';
 import { logout, update } from '../../Auth/userSlice';
 
 const useStyles = makeStyles((theme) => ({
-    // root: {
-    //     // padding: theme.spacing(3, 0),
-    //     // backgroundColor: '#f9f9f9',
-    //     // marginTop: '00px',
-    // },
-    // container: {
-    //     padding: theme.spacing(2),
-    //     backgroundColor: '#fff',
-    //     borderRadius: theme.spacing(1),
-    //     boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-    //     display: 'flex',
-    //     flexDirection: 'row',
-    //     gap: theme.spacing(3),
-    //     display: 'flex',
-    //     flexDirection: 'column',
-    //     paddingBottom: theme.spacing(2),
-    //     borderBottom: `1px solid ${theme.palette.grey[300]}`,
-    // },
-    // title: {
-    //     justifyContent: 'center',
-    //     textAlign: 'center',
-    //     fontSize: '24px',
-    //     fontWeight: 'bold',
-    //     marginBottom: theme.spacing(3),
-    //     // fontFamily: 'Alumni Sans',
-    //     fontFamily: 'monospace'
-    // },
-    // profileImage: {
-    //     display: 'block',
-    //     margin: '0 auto',
-    //     borderRadius: '50%',
-    //     width: '150px',
-    //     height: '150px',
-    //     objectFit: 'cover',
-    //     marginBottom: theme.spacing(3),
-    // },
     wrapper: {
         display: 'flex',
         flexDirection: 'column',
@@ -70,22 +33,21 @@ const useStyles = makeStyles((theme) => ({
     name: {
         width: '250px',
         fontWeight: 'bold',
-        fontFamily: 'monospace'
+        fontFamily: 'monospace',
     },
     input: {
         flex: 1,
     },
     button: {
-        // marginTop: theme.spacing(3),
         justifyContent: 'center',
         textAlign: 'center',
         width: '200px',
     },
-    wrapperButton:{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      gap: theme.spacing(1),
+    wrapperButton: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: theme.spacing(1),
     },
     paper: {
         padding: theme.spacing(3),
@@ -95,176 +57,217 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const validationSchema = Yup.object().shape({
-    // displayName: Yup.string().required('Required'),
-    // email: Yup.string().email('Invalid email').required('Required'),
-    // birthday: Yup.date().required('Required'),
-    // gender: Yup.string().required('Required'),
-    // password: Yup.string().required('Required'),
-    // profileImage: Yup.string().url('Invalid URL'),
-    // contactPhone: Yup.string().required('Required'),
+    displayName: Yup.string().required('Tên hiển thị là bắt buộc'),
+    address: Yup.string().required('Địa chỉ là bắt buộc'),
+    addressDetail: Yup.string().required('Số nhà, tên đường là bắt buộc'),
+    contactPhone: Yup.string()
+        .required('Số điện thoại là bắt buộc')
+        .matches(/^[0-9]+$/, 'Số điện thoại chỉ được chứa số')
+        .min(10, 'Số điện thoại phải có ít nhất 10 số')
+        .max(11, 'Số điện thoại không được quá 11 số'),
 });
 
 function Account() {
+    const token = localStorage.getItem('access_token');
     const userId = localStorage.getItem('userId');
     const [formData, setFormData] = useState({
         displayName: '',
-        address:'',
-        addressDetail:'',
+        address: '',
+        addressDetail: '',
         contactPhone: '',
     });
-    const theme = useTheme();
-
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const classes = useStyles();
     const dispatch = useDispatch();
     const { enqueueSnackbar } = useSnackbar();
-    const currentUser = useSelector((state) => state.user);
 
     useEffect(() => {
-        if (!userId) {
-            setError('No user ID found in local storage');
+        if (!token) {
+            setError('Bạn chưa đăng nhập');
             return;
         }
-        (async () => {
+
+        if (!userId) {
+            setError('Không tìm thấy ID người dùng');
+            return;
+        }
+
+        const fetchUserData = async () => {
             try {
                 const userData = await userApi.getInfo(userId);
                 setFormData(userData);
             } catch (error) {
-                setError('Failed to fetch account info');
+                setError('Không thể lấy thông tin tài khoản');
             }
-        })();
-    }, [userId]);
+        };
+        fetchUserData();
+    }, [userId, token]);
 
     const handleLogout = () => {
-        const action = logout();
-        dispatch(action);
+        dispatch(logout());
         navigate('/');
     };
 
     const handleUpdateUser = async (values, { setSubmitting }) => {
         try {
-            const action = update ({ id: userId, ...values });
-            const resultAction = await dispatch(action);
-            unwrapResult(resultAction);
-            enqueueSnackbar('Update successfully !!!', { variant: 'success' });
-            navigate('/products');
+            const resultAction = await dispatch(update({ id: userId, ...values }));
+            console.log('resultAction:', resultAction);
+
+            // Kiểm tra nếu action bị rejected thì không unwrap
+            if (update.fulfilled.match(resultAction)) {
+                const response = unwrapResult(resultAction);
+                console.log('response:', response);
+                enqueueSnackbar('Cập nhật thành công!', { variant: 'success' });
+                navigate('/products');
+            } else {
+                throw new Error('Cập nhật thất bại');
+            }
         } catch (error) {
-            // const errMessage = error.response?.data?.message || error.message || 'Update failed';
-            // enqueueSnackbar("Update user không thành công", { variant: 'error' });
-            enqueueSnackbar('Update successfully !!!', { variant: 'success' });
+            enqueueSnackbar('Có lỗi xảy ra khi cập nhật thông tin', { variant: 'error' });
         }
         setSubmitting(false);
     };
 
+    if (!token) {
+        return (
+            <Box>
+                <Container>
+                    <Paper
+                        elevation={0}
+                        className={classes.paper}
+                    >
+                        <Typography
+                            variant='h6'
+                            color='error'
+                            align='center'
+                        >
+                            Bạn chưa đăng nhập
+                        </Typography>
+                    </Paper>
+                </Container>
+            </Box>
+        );
+    }
+
     return (
-        <Box className={classes.root}>
-            <Container style={{ }}>
+        <Box>
+            <Container>
                 <Paper
                     elevation={0}
                     className={classes.paper}
                 >
-                    <Grid className={classes.container}>
+                    <Grid>
                         {error && <Typography color='error'>{error}</Typography>}
-                        {formData.profileImage && (
-                            <img
-                                src={formData.profileImage}
-                                alt='Profile'
-                                className={classes.profileImage}
-                            />
-                        )}
                         <Formik
                             initialValues={formData}
                             enableReinitialize
                             validationSchema={validationSchema}
                             onSubmit={handleUpdateUser}
                         >
-                            {({ handleChange, handleBlur }) => (
+                            {({ handleChange, handleBlur, errors, touched }) => (
                                 <Form className={classes.wrapper}>
-                                    <Form className={classes.wrapper}>
-                                        <Box className={classes.item}>
-                                            <Typography className={classes.name}>
-                                                Tên hiển thị
-                                            </Typography>
-                                            <Field
-                                                as={TextField}
-                                                name='displayName'
-                                                className={classes.input}
-                                                variant='outlined'
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                            />
-                                        </Box>
-                                        <Box className={classes.item}>
-                                            <Typography className={classes.name}>Địa chỉ (Phường/Quận/Thành Phố) </Typography>
-                                            <Field
-                                                as={TextField}
-                                                name='address'
-                                                className={classes.input}
-                                                variant='outlined'
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                            />
-                                        </Box>
-                                        <Box className={classes.item}>
-                                            <Typography className={classes.name}>
-                                                Số nhà , tên đường
-                                            </Typography>
-                                            <Field
-                                                as={TextField}
-                                                name='addressDetail'
-                                                className={classes.input}
-                                                variant='outlined'
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                            />
-                                        </Box>
-                                        <Box className={classes.item}>
-                                            <Typography className={classes.name}>
-                                                Số điện thoại
-                                            </Typography>
-                                            <Field
-                                                as={TextField}
-                                                name='contactPhone'
-                                                className={classes.input}
-                                                variant='outlined'
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                            />
-                                        </Box>
-                                    </Form>
+                                    <Box className={classes.item}>
+                                        <Typography className={classes.name}>
+                                            Tên hiển thị
+                                        </Typography>
+                                        <Field
+                                            as={TextField}
+                                            name='displayName'
+                                            className={classes.input}
+                                            variant='outlined'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched.displayName && Boolean(errors.displayName)
+                                            }
+                                            helperText={touched.displayName && errors.displayName}
+                                        />
+                                    </Box>
+                                    <Box className={classes.item}>
+                                        <Typography className={classes.name}>
+                                            Địa chỉ (Phường/Quận/Thành Phố)
+                                        </Typography>
+                                        <Field
+                                            as={TextField}
+                                            name='address'
+                                            className={classes.input}
+                                            variant='outlined'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={touched.address && Boolean(errors.address)}
+                                            helperText={touched.address && errors.address}
+                                        />
+                                    </Box>
+                                    <Box className={classes.item}>
+                                        <Typography className={classes.name}>
+                                            Số nhà, tên đường
+                                        </Typography>
+                                        <Field
+                                            as={TextField}
+                                            name='addressDetail'
+                                            className={classes.input}
+                                            variant='outlined'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched.addressDetail &&
+                                                Boolean(errors.addressDetail)
+                                            }
+                                            helperText={
+                                                touched.addressDetail && errors.addressDetail
+                                            }
+                                        />
+                                    </Box>
+                                    <Box className={classes.item}>
+                                        <Typography className={classes.name}>
+                                            Số điện thoại
+                                        </Typography>
+                                        <Field
+                                            as={TextField}
+                                            name='contactPhone'
+                                            className={classes.input}
+                                            variant='outlined'
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                            error={
+                                                touched.contactPhone && Boolean(errors.contactPhone)
+                                            }
+                                            helperText={touched.contactPhone && errors.contactPhone}
+                                        />
+                                    </Box>
                                     <Box className={classes.wrapperButton}>
-                                    <Button
-                                        className={classes.button}
-                                        variant='contained'
-                                        color='primary'
-                                        type='submit'
-                                        style={{ 
-                                          marginRight: '10px', 
-                                          background: 'black' ,
-                                          borderRadius: '0px' ,
-                                          fontFamily: 'monospace',
-                                      }}
-                                    >
-                                        Update
-                                    </Button>
-                                    <Button
-                                        className={classes.button}
-                                        variant='contained'
-                                        color='secondary'
-                                        onClick={handleLogout}
-                                        style={{
-                                          marginRight: '10px',
-                                          background: 'white',
-                                          color: 'black',
-                                          border: '1px solid black',
-                                          fontWeight: 'bold',
-                                          borderRadius: '0px' ,
-                                          fontFamily: 'monospace',
-                                      }}
-                                    >
-                                        Logout
-                                    </Button>
+                                        <Button
+                                            className={classes.button}
+                                            variant='contained'
+                                            color='primary'
+                                            type='submit'
+                                            style={{
+                                                marginRight: '10px',
+                                                background: 'black',
+                                                borderRadius: '0px',
+                                                fontFamily: 'monospace',
+                                            }}
+                                        >
+                                            Cập nhật
+                                        </Button>
+                                        <Button
+                                            className={classes.button}
+                                            variant='contained'
+                                            color='secondary'
+                                            onClick={handleLogout}
+                                            style={{
+                                                marginRight: '10px',
+                                                background: 'white',
+                                                color: 'black',
+                                                border: '1px solid black',
+                                                fontWeight: 'bold',
+                                                borderRadius: '0px',
+                                                fontFamily: 'monospace',
+                                            }}
+                                        >
+                                            Đăng xuất
+                                        </Button>
                                     </Box>
                                 </Form>
                             )}

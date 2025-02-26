@@ -4,7 +4,6 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   @MinLength(4, { message: 'Display Name must be at least 4 characters long' })
-  @MaxLength(16, { message: 'Display Name must be at most 12 characters long' })
   displayName?: string;
 
   @IsOptional()
@@ -13,9 +12,13 @@ export class UpdateUserDto {
 
   @IsOptional()
   @IsString()
-  facebookId?: string;
+  avaUrl?: string;
 
   @IsOptional()
   @IsString()
-  avaUrl?: string;
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  addressDetail?: string;
 }

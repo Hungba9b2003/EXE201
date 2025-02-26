@@ -80,7 +80,7 @@ function ListPage(props) {
         });
     };
     return (
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', marginTop: '60px' }}>
             <div className='wrapper__product'>
                 <div className='wrapper__product__filter'>
                     <ProductFilter

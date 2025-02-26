@@ -347,14 +347,14 @@ function CartPages(props) {
     };
 
     const totalAmount = selectedProducts.reduce((total, selectedProduct) => {
-        const cartItem = cartList.find(item =>
-            item.product.some(product => product._id === selectedProduct._id)
+        const cartItem = cartList.find((item) =>
+            item.product.some((product) => product._id === selectedProduct._id),
         );
         return total + cartItem.quantity * selectedProduct.salePrice;
     }, 0);
 
     return (
-        <Box>
+        <Box style={{ marginTop: '160px' }}>
             {cartItems.length === 0 ? (
                 <CartClear />
             ) : (
@@ -530,7 +530,7 @@ function CartPages(props) {
                                                             style={{
                                                                 display: 'flex',
                                                                 border: '1px solid  black',
-                                                                alignItems:'center'
+                                                                alignItems: 'center',
                                                             }}
                                                         >
                                                             <Button

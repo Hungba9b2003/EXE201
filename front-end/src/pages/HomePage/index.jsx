@@ -13,10 +13,12 @@ function HomePage(props) {
             <section className='wrapper__home'>
                 <div className='wrapper__home__content'>
                     <h1>PAWSOME </h1>
-                    <h3></h3>
+                    {/* <h3>Redefined !</h3> */}
                     <p>
-                    ♥️ Khởi đầu của tình yêu thú cưng ♥️
-                    Chào mừng đến với chúng tôi, doanh nghiệp nhỏ mang tình yêu lớn. Với sứ mệnh giúp thú cưng của bạn trở nên đáng yêu và thanh lịch, Pawsome cố gắng tạo ra những bộ sưu tập chất lượng, sang trọng.
+                        ♥️ Khởi đầu của tình yêu thú cưng ♥️ Chào mừng đến với chúng tôi, doanh
+                        nghiệp nhỏ mang tình yêu lớn. Với sứ mệnh giúp thú cưng của bạn trở nên đáng
+                        yêu và thanh lịch, Pawsome cố gắng tạo ra những bộ sưu tập chất lượng, sang
+                        trọng.
                     </p>
                     <a
                         href='products'
@@ -29,8 +31,7 @@ function HomePage(props) {
                 <div className='wrapper__home__image'>
                     <div className='wrapper__home__image__rhombus'>
                         <img
-                        style={{width: "90%", marginLeft: "60px"}}
-                        
+                            style={{ marginLeft: '60px', width: '90%' }}
                             src={newImageProduct}
                             alt='Detroit Watch Model 2'
                         />

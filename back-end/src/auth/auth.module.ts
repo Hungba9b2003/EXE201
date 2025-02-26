@@ -15,8 +15,8 @@ import { AuthService } from './services/auth.service';
 import { AuthRepository } from './repository/auth.repository';
 import { VerifyTokenMiddleware } from 'src/middlewares/logging.middleware';
 import { JwtStrategy } from './strategies/jwt.strategy';
-require('dotenv').config();
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),

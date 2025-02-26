@@ -22,32 +22,35 @@ export class Product extends Document {
   @Prop()
   salePrice: number;
 
-  @Prop()
-  dialSize: number;
+  @Prop([{ size: String, quantity: Number }])
+  sizes: { size: string; quantity: number }[];
 
   @Prop()
-  thickness: number;
+  material: string;
 
   @Prop()
-  dialColor: string;
+  color: string;
 
   @Prop()
-  movementType: string;
+  pattern: string;
 
   @Prop()
-  strapSize: number;
+  season: string;
 
   @Prop()
   waterResistance: string;
 
   @Prop()
-  glassMaterial: string;
+  closureType: string;
 
   @Prop()
-  strapMaterial: string;
+  stretch: string;
 
   @Prop({ type: Types.ObjectId })
   typeId: Types.ObjectId;
+
+  @Prop({ type: String, enum: ['dog', 'cat', 'rabbit', 'bird', 'other'] })
+  category: string;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

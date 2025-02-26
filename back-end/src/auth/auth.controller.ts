@@ -12,7 +12,7 @@ import {
 import { RegisterUserDto } from './dto/register-user.dto';
 
 import { LoginUserDto } from './dto/login.dto';
-import { GoogleAuthGuard } from './utils/GoogleAuthGuards';
+// import { GoogleAuthGuard } from './utils/GoogleAuthGuards';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from './services/auth.service';
@@ -42,7 +42,6 @@ export class AuthController {
 
   @Get('/facebook/login')
   @UseGuards(AuthGuard('facebook'))
-
   async facebookLogin(): Promise<any> {
     return HttpStatus.OK;
   }
@@ -59,7 +58,10 @@ export class AuthController {
 
   @Get('google/login')
   @UseGuards(AuthGuard('google'))
-  async handleGoogleLogin(@Req() req: Request) {
+  // async handleGoogleLogin(@Req() req: Request) {
+  //   return { msg: 'Google Authentication' };
+  // }
+  async handleGoogleLogin() {
     return { msg: 'Google Authentication' };
   }
 
