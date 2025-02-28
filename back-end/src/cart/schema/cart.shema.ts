@@ -9,6 +9,9 @@ export class Cart {
   productId: Types.ObjectId;
 
   @Prop()
+  size: string;
+
+  @Prop()
   quantity: number;
 }
 

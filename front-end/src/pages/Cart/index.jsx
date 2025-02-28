@@ -154,14 +154,56 @@ const validationSchema = Yup.object().shape({
 function CartPages(props) {
     //=================================================================================================================================
     const [selectedProducts, setSelectedProducts] = useState([]);
+    const [selectAll, setSelectAll] = useState(false);
 
-    const handleCheckboxChange = (product) => {
-        if (selectedProducts.some((item) => item._id === product._id)) {
-            setSelectedProducts(selectedProducts.filter((item) => item._id !== product._id));
+    const handleSelectAll = () => {
+        if (selectAll) {
+            // Nếu đang chọn tất cả => Bỏ chọn tất cả
+            setSelectedProducts([]);
         } else {
-            setSelectedProducts([...selectedProducts, product]);
+            // Nếu chưa chọn tất cả => Chọn tất cả sản phẩm trong giỏ hàng
+            setSelectedProducts(
+                cartList.map((cartItem) => ({
+                    _id: cartItem._id,
+                    size: cartItem.size,
+                    quantity: cartItem.quantity,
+                    salePrice: cartItem.salePrice,
+                })),
+            );
         }
+        // console.log(cartList);
+        // Cập nhật trạng thái "Chọn tất cả"
+        setSelectAll(!selectAll);
     };
+
+    const handleCheckboxChange = (productId, size) => {
+        setSelectedProducts((prevSelected) => {
+            const index = prevSelected.findIndex(
+                (item) => item._id === productId && item.size === size,
+            );
+            let updatedSelected;
+
+            if (index !== -1) {
+                // Nếu sản phẩm đã được chọn, loại bỏ nó khỏi danh sách
+                updatedSelected = prevSelected.filter(
+                    (item) => !(item._id === productId && item.size === size),
+                );
+            } else {
+                // Nếu sản phẩm chưa được chọn, thêm vào danh sách đã chọn
+                const product = cartList.find(
+                    (cart) => cart._id === productId && cart.size === size,
+                );
+                if (!product) return prevSelected; // Tránh lỗi nếu sản phẩm không tồn tại
+                updatedSelected = [...prevSelected, product];
+            }
+
+            // Cập nhật trạng thái "Chọn tất cả"
+            setSelectAll(updatedSelected.length === cartList.length);
+
+            return updatedSelected;
+        });
+    };
+
     //=================================================================================================================================
 
     const [paymentMethod, setPaymentMethod] = React.useState('');
@@ -206,8 +248,10 @@ function CartPages(props) {
     const handleRemoveItem = async (id) => {
         try {
             const userId = localStorage.getItem('userId');
-            const productIds = [id];
-            const req = await cartsApi.delete(userId, productIds);
+            const cartId = id;
+            console.log(id);
+            const req = await cartsApi.delete(userId, cartId);
+            console.log(req);
             dispatch(removeFromCart(id));
             enqueueSnackbar('Đã xóa khỏi giỏ hàng!', { variant: 'error' });
         } catch (error) {
@@ -240,6 +284,7 @@ function CartPages(props) {
     // Button Buy Now
     // =========================================================
     const products = [];
+    // console.log(cartList);
     cartList.forEach((cartItem) => {
         cartItem.product.forEach((productItem) => {
             if (selectedProducts.some((item) => item._id === productItem._id)) {
@@ -328,18 +373,20 @@ function CartPages(props) {
         }
     };
 
-    const handleIncreaseQuantity = (id) => {
+    const handleIncreaseQuantity = (id, size) => {
         setCartList(
             cartList.map((item) =>
-                item._id === id ? { ...item, quantity: item.quantity + 1 } : item,
+                item._id === id && item.size === size
+                    ? { ...item, quantity: item.quantity + 1 }
+                    : item,
             ),
         );
     };
 
-    const handleDecreaseQuantity = (id) => {
+    const handleDecreaseQuantity = (id, size) => {
         setCartList(
             cartList.map((item) =>
-                item._id === id && item.quantity > 1
+                item._id === id && item.size === size && item.quantity > 1
                     ? { ...item, quantity: item.quantity - 1 }
                     : item,
             ),
@@ -347,10 +394,16 @@ function CartPages(props) {
     };
 
     const totalAmount = selectedProducts.reduce((total, selectedProduct) => {
-        const cartItem = cartList.find((item) =>
-            item.product.some((product) => product._id === selectedProduct._id),
+        // console.log(selectedProduct);
+        const cartItem = cartList.find(
+            (item) => item._id === selectedProduct._id && item.size === selectedProduct.size,
         );
-        return total + cartItem.quantity * selectedProduct.salePrice;
+
+        if (cartItem) {
+            return total + cartItem.quantity * cartItem.product[0].salePrice;
+        }
+
+        return total;
     }, 0);
 
     return (
@@ -469,121 +522,129 @@ function CartPages(props) {
                     </Box>
                     <Box className={classes.rightPanel}>
                         <div>
-                            <Typography
-                                component='h1'
-                                variant='h5'
-                                style={{ fontFamily: 'monospace', marginBottom: '20px' }}
+                            <Box
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginBottom: '20px',
+                                }}
                             >
-                                Giỏ hàng({cartItemsCount})
-                            </Typography>
+                                <input
+                                    type='checkbox'
+                                    checked={selectAll}
+                                    onChange={handleSelectAll}
+                                    style={{
+                                        width: '20px',
+                                        height: '20px',
+                                        marginRight: '10px',
+                                    }}
+                                />
+                                <Typography
+                                    component='h1'
+                                    variant='h5'
+                                    style={{ fontFamily: 'monospace' }}
+                                >
+                                    Chọn tất cả ({cartItemsCount} sản phẩm)
+                                </Typography>
+                            </Box>
                             {cartList.map((cartItem) => (
-                                <Box key={cartItem._id}>
-                                    {cartItem.product.map((productItem, index) => (
-                                        <Box style={{ display: 'flex' }}>
-                                            <Box
+                                <Box key={`${cartItem._id}-${cartItem.size}`}>
+                                    <Box style={{ display: 'flex' }}>
+                                        <Box style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <input
                                                 style={{
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
+                                                    width: '20px',
+                                                    height: '20px',
+                                                    backgroundColor: 'black',
+                                                    alignSelf: 'center',
                                                 }}
-                                            >
-                                                <input
-                                                    style={{
-                                                        width: '20px',
-                                                        height: '20px',
-                                                        backgroundColor: 'black',
-                                                        alignSelf: 'center',
-                                                    }}
-                                                    type='checkbox'
-                                                    checked={selectedProducts.some(
-                                                        (item) => item._id === productItem._id,
-                                                    )}
-                                                    onChange={() =>
-                                                        handleCheckboxChange(productItem)
+                                                type='checkbox'
+                                                checked={selectedProducts.some(
+                                                    (item) =>
+                                                        item._id === cartItem._id &&
+                                                        item.size === cartItem.size,
+                                                )}
+                                                onChange={() =>
+                                                    handleCheckboxChange(
+                                                        cartItem._id,
+                                                        cartItem.size,
+                                                    )
+                                                }
+                                            />
+                                        </Box>
+                                        <Box className={classes.cartItem}>
+                                            <Box className={classes.img}>
+                                                <img
+                                                    src={
+                                                        cartItem.product[0].images[0]
+                                                            ? `${cartItem.product[0].images[0]}`
+                                                            : 'https://via.placeholder.com/444'
                                                     }
+                                                    alt={cartItem._id}
+                                                    className={classes.cartImage}
                                                 />
                                             </Box>
-                                            <Box
-                                                key={index}
-                                                className={classes.cartItem}
-                                            >
-                                                <Box className={classes.img}>
-                                                    <img
-                                                        src={
-                                                            productItem.images[0]
-                                                                ? `${productItem.images[0]}`
-                                                                : 'https://via.placeholder.com/444'
-                                                        }
-                                                        alt={productItem.name}
-                                                        className={classes.cartImage}
-                                                    />
-                                                </Box>
-                                                <Box className={classes.cartDetails}>
-                                                    <Typography
-                                                        component='h1'
-                                                        variant='h5'
-                                                        className={classes.name}
-                                                    >
-                                                        {productItem.name}
-                                                    </Typography>
-                                                    <Box style={{ display: '' }}>
-                                                        <Box
-                                                            style={{
-                                                                display: 'flex',
-                                                                border: '1px solid  black',
-                                                                alignItems: 'center',
-                                                            }}
-                                                        >
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleDecreaseQuantity(
-                                                                        cartItem._id,
-                                                                    )
-                                                                }
-                                                            >
-                                                                -
-                                                            </Button>
-                                                            <Typography
-                                                                component='p'
-                                                                className={classes.description}
-                                                            >
-                                                                {cartItem.quantity}
-                                                            </Typography>
-                                                            <Button
-                                                                onClick={() =>
-                                                                    handleIncreaseQuantity(
-                                                                        cartItem._id,
-                                                                    )
-                                                                }
-                                                            >
-                                                                +
-                                                            </Button>
-                                                        </Box>
-                                                    </Box>
-
-                                                    <Typography
-                                                        component='p'
-                                                        className={classes.salePrice}
-                                                    >
-                                                        {formatPrice(productItem.salePrice)}
-                                                    </Typography>
-                                                </Box>
-                                                <Box
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                    }}
+                                            <Box className={classes.cartDetails}>
+                                                <Typography
+                                                    component='h1'
+                                                    variant='h5'
+                                                    className={classes.name}
                                                 >
-                                                    <IconButton
-                                                        onClick={() =>
-                                                            handleRemoveItem(productItem._id)
-                                                        }
+                                                    {cartItem.product[0].name} ({cartItem.size})
+                                                </Typography>
+                                                <Box>
+                                                    <Box
+                                                        style={{
+                                                            display: 'flex',
+                                                            border: '1px solid black',
+                                                            alignItems: 'center',
+                                                        }}
                                                     >
-                                                        <DeleteOutlineIcon />
-                                                    </IconButton>
+                                                        <Button
+                                                            onClick={() =>
+                                                                handleDecreaseQuantity(
+                                                                    cartItem._id,
+                                                                    cartItem.size,
+                                                                )
+                                                            }
+                                                        >
+                                                            -
+                                                        </Button>
+                                                        <Typography
+                                                            component='p'
+                                                            className={classes.description}
+                                                        >
+                                                            {cartItem.quantity}
+                                                        </Typography>
+                                                        <Button
+                                                            onClick={() =>
+                                                                handleIncreaseQuantity(
+                                                                    cartItem._id,
+                                                                    cartItem.size,
+                                                                )
+                                                            }
+                                                        >
+                                                            +
+                                                        </Button>
+                                                    </Box>
                                                 </Box>
+
+                                                <Typography
+                                                    component='p'
+                                                    className={classes.salePrice}
+                                                >
+                                                    {formatPrice(cartItem.product[0].salePrice)}
+                                                </Typography>
+                                            </Box>
+                                            <Box style={{ display: 'flex', alignItems: 'center' }}>
+                                                <IconButton
+                                                    onClick={() => handleRemoveItem(cartItem._id)}
+                                                >
+                                                    <DeleteOutlineIcon />
+                                                </IconButton>
                                             </Box>
                                         </Box>
-                                    ))}
+                                    </Box>
                                 </Box>
                             ))}
                             <Box style={{ display: 'flex' }}>

@@ -11,53 +11,82 @@ export class CartService {
   constructor(private cartRepository: CartRepository) {}
 
   async createCart(createCartDto: CreateCartDto) {
-    const userIdObject = new Types.ObjectId(createCartDto.userId);
-    const productIdObject = new Types.ObjectId(createCartDto.productId);
-
     try {
+      const { userId, productId, quantity, size } = createCartDto;
+      const userObjectId = new ObjectId(userId);
+      const productObjectId = new ObjectId(productId);
+      console.log(userObjectId);
+      console.log(productObjectId);
+      // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
       const existingCart =
         await this.cartRepository.getCartByProductIdAndUserId(
-          productIdObject,
-          userIdObject,
+          productObjectId,
+          userObjectId,
+          size,
         );
-
       if (existingCart) {
-        const updatedCart = await this.cartRepository.updateCartQuantity(
-          productIdObject,
-          userIdObject,
-          createCartDto.quantity,
-        );
-        return {
-          message: 'Cart quantity updated successfully',
-          cart: updatedCart,
-        };
-      } else {
-        const data = {
-          userId: userIdObject,
-          productId: productIdObject,
-          quantity: createCartDto.quantity,
-        };
-        const newCart = await this.cartRepository.create(data);
-        return {
-          message: 'Create cart success',
-          cart: newCart,
-        };
+        if (existingCart.size === size) {
+          // Nếu cùng size, cập nhật số lượng
+          const updatedCart = await this.cartRepository.updateCartQuantity(
+            productObjectId,
+            userObjectId,
+            quantity,
+            size,
+          );
+          return {
+            message: 'Cart quantity updated successfully',
+            cart: updatedCart,
+          };
+        }
       }
+      console.log(existingCart);
+      // Nếu không tìm thấy sản phẩm cùng size hoặc không có sản phẩm nào, thêm mới
+      const newCart = await this.cartRepository.create({
+        userId: userObjectId,
+        productId: productObjectId,
+        quantity,
+        size,
+      });
+      return {
+        message: 'Create cart success',
+        cart: newCart,
+      };
     } catch (err) {
-      throw new HttpException('Create cart error', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        err.message || 'Create cart error',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
   async getCartByUserId(userId: string) {
-    const userIdObject = new Types.ObjectId(userId);
-    return this.cartRepository.getByUserId(userIdObject);
+    try {
+      const userIdObject = new Types.ObjectId(userId);
+      return await this.cartRepository.getByUserId(userIdObject);
+    } catch (err) {
+      throw new HttpException('Invalid user ID', HttpStatus.BAD_REQUEST);
+    }
   }
 
-  async getCartByProductIdAndUserId(productId: ObjectId, userId: ObjectId) {
-    return await this.cartRepository.getCartByProductIdAndUserId(
-      productId,
-      userId,
-    );
+  async getCartByProductIdAndUserId(
+    productId: string,
+    userId: string,
+    size: string,
+  ) {
+    try {
+      const productObjectId = new Types.ObjectId(productId);
+      const userObjectId = new Types.ObjectId(userId);
+      return await this.cartRepository.getCartByProductIdAndUserId(
+        productObjectId,
+        userObjectId,
+        size,
+      );
+    } catch (err) {
+      throw new HttpException(
+        'Invalid product or user ID',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async getAllCarts() {
@@ -71,10 +100,16 @@ export class CartService {
     }
     return await this.cartRepository.deleteCartById(cartIdObjectId);
   }
-  async deleteCartByProductIdAndUserId(productId: ObjectId, userId: ObjectId) {
+
+  async deleteCartByProductIdAndUserId(
+    productId: ObjectId,
+    userId: ObjectId,
+    size: string,
+  ) {
     const cartExists = await this.cartRepository.getCartByProductIdAndUserId(
       productId,
       userId,
+      size,
     );
 
     if (!cartExists) {
@@ -84,9 +119,14 @@ export class CartService {
     return await this.cartRepository.deleteCartByProductIdAndUserId(
       productId,
       userId,
+      size,
     );
   }
-  async deleteCartByProductIdsAndUserId(userId: string, productIds: string[]) {
+  async deleteCartByProductIdsAndUserId(
+    userId: string,
+    productIds: string[],
+    size: string,
+  ) {
     const userIdObjectId = new ObjectId(userId);
 
     const productIdsObjectId = productIds.map(
@@ -96,7 +136,11 @@ export class CartService {
     try {
       const deletePromises = productIdsObjectId.map(async (productId) => {
         try {
-          await this.deleteCartByProductIdAndUserId(productId, userIdObjectId);
+          await this.deleteCartByProductIdAndUserId(
+            productId,
+            userIdObjectId,
+            size,
+          );
         } catch (err) {
           throw new Error(
             `Error deleting cart for productId ${productId}: ${err.message}`,

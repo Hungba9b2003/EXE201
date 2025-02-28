@@ -20,7 +20,7 @@ const cartsApi = {
 
     add(payload) {
         const url = 'api/carts';
-        return axiosClient.post(url,payload);
+        return axiosClient.post(url, payload);
     },
 
     update(data) {
@@ -28,10 +28,10 @@ const cartsApi = {
         return axiosClient.patch(url, data);
     },
 
-    delete(userId, productIds) {
+    delete(userId, cartId) {
         const url = `api/carts/user/${userId}`;
-        return axiosClient.put(url,{productIds});
-    }
+        return axiosClient.put(url, { cartId });
+    },
 };
 
 export default cartsApi;

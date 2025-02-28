@@ -9,6 +9,10 @@ export class CreateCartDto {
   productId: string;
 
   @IsNotEmpty()
+  @IsString()
+  size: string;
+
+  @IsNotEmpty()
   @IsNumber()
   quantity: number;
 }

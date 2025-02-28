@@ -27,10 +27,7 @@ export class CartController {
   }
 
   @Put('/user/:userId')
-  deleteProductsInCart(
-    @Param('userId') userId: string,
-    @Body('productIds') productIds: string[],
-  ) {
-    return this.cartService.deleteCartByProductIdsAndUserId(userId, productIds);
+  deleteProductsInCart(@Body('cartId') cartId: string) {
+    return this.cartService.deleteCartById(cartId);
   }
 }

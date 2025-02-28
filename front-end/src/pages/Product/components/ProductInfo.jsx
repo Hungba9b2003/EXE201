@@ -104,7 +104,7 @@ const useStyles = makeStyles((theme) => ({
 function ProductInfo({ product = {} }) {
     const [selectedSize, setSelectedSize] = useState('');
     const classes = useStyles();
-    const { name, description, salePrice, originalPrice, _id, images } = product;
+    const { name, description, salePrice, originalPrice, _id, images, sizes } = product;
     const userId = localStorage.getItem('userId');
     const promotionPercent = discountPercentage(originalPrice, salePrice);
     const [openModal, setOpenModal] = useState(false);
@@ -112,6 +112,7 @@ function ProductInfo({ product = {} }) {
     const dispatch = useDispatch();
     const [userInfo, setUserInfo] = useState([]);
     const shippingInfo = {
+        size: selectedSize,
         receiver: userInfo.displayName,
         phone: userInfo.contactPhone,
         address: userInfo.address,
@@ -152,7 +153,7 @@ function ProductInfo({ product = {} }) {
     // ============================================================================================================================
     const productId = _id ? _id.toString() : '';
     const quantity = 1;
-    const payload = { userId, productId, quantity };
+    const payload = { userId, productId, size: selectedSize, quantity };
     // ============================================================================================================================
     const handleAddToCart = async () => {
         if (!userId) {
@@ -160,12 +161,16 @@ function ProductInfo({ product = {} }) {
             return;
         }
         try {
+            console.log(selectedSize);
             const req = await cartsApi.add(payload);
+            console.log(payload);
             const action = addToCart({
                 id: product._id,
+                size: selectedSize,
                 product,
                 quantity: 1,
             });
+            console.log(action);
             dispatch(action);
             enqueueSnackbar('Đã thêm vào giỏ hàng  ', { variant: 'success' });
         } catch (error) {

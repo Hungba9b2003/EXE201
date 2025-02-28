@@ -41,13 +41,6 @@ export class OrderService {
     const userIdObject = new Types.ObjectId(createOrderDto.userId);
     const newOrder = { ...createOrderDto, userId: userIdObject, totalAmount };
     try {
-      if (createOrderDto.isInCart) {
-        await this.cartService.deleteCartByProductIdsAndUserId(
-          createOrderDto.userId,
-          productIds,
-        );
-      }
-
       const orderExist = await this.orderRepository.create(newOrder);
       return {
         mesage: 'create order successfully',

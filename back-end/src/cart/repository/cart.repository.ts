@@ -42,12 +42,20 @@ export class CartRepository {
     ]);
   }
 
-  async getCartByProductIdAndUserId(productId: ObjectId, userId: ObjectId) {
-    return await this.cartModel.findOne({ productId, userId });
+  async getCartByProductIdAndUserId(
+    productId: ObjectId,
+    userId: ObjectId,
+    size: string,
+  ) {
+    return await this.cartModel.findOne({ productId, userId, size });
   }
 
-  async deleteCartByProductIdAndUserId(productId: ObjectId, userId: ObjectId) {
-    return await this.cartModel.deleteOne({ productId, userId });
+  async deleteCartByProductIdAndUserId(
+    productId: ObjectId,
+    userId: ObjectId,
+    size: string,
+  ) {
+    return await this.cartModel.deleteOne({ productId, userId, size });
   }
 
   async deleteCartById(cartId: ObjectId) {
@@ -58,10 +66,11 @@ export class CartRepository {
     productId: ObjectId,
     userId: ObjectId,
     quantity: number,
+    size: string,
   ) {
     return this.cartModel
       .findOneAndUpdate(
-        { productId, userId },
+        { productId, userId, size },
         { $inc: { quantity } },
         { new: true },
       )

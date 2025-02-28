@@ -20,7 +20,7 @@ function Header(props) {
     const dispatch = useDispatch();
     const [cartList, setCartList] = useState([]);
     const [userId, setUserId] = useState();
-    const cartItemsCount = useSelector(cartItemsCountSelector);
+    const [cartItemsCount, setCartItemsCount] = useState();
 
     useEffect(() => {
         const userId = localStorage.getItem('userId');
@@ -41,6 +41,7 @@ function Header(props) {
         (async () => {
             try {
                 const cartList = await cartsApi.getAll(userId);
+                setCartItemsCount(cartList.length);
                 setCartList(cartList);
             } catch (error) {
                 console.log('Failed to fetch carts list', error);
