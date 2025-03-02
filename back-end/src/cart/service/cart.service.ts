@@ -28,10 +28,8 @@ export class CartService {
         if (existingCart.size === size) {
           // Nếu cùng size, cập nhật số lượng
           const updatedCart = await this.cartRepository.updateCartQuantity(
-            productObjectId,
-            userObjectId,
+            existingCart._id,
             quantity,
-            size,
           );
           return {
             message: 'Cart quantity updated successfully',
@@ -87,6 +85,17 @@ export class CartService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+  async updateCartQuantity(cartId: string, quantity: number) {
+    const cartIdObjectId = new Types.ObjectId(cartId);
+    const cart = await this.cartRepository.getById(cartIdObjectId);
+    if (!cart) {
+      throw new HttpException('Cart not found', HttpStatus.NOT_FOUND);
+    }
+    return await this.cartRepository.updateCartQuantity(
+      cartIdObjectId,
+      quantity,
+    );
   }
 
   async getAllCarts() {

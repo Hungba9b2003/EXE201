@@ -32,7 +32,7 @@ export class PaymentService {
       item: JSON.stringify(items),
       embed_data: JSON.stringify(embed_data),
       amount: price,
-      description: `Curnon - Payment for the order #${transID}`,
+      description: `Pawsome - Payment for the order #${transID}`,
       bank_code: '',
       mac: '',
       // cho url vào đây

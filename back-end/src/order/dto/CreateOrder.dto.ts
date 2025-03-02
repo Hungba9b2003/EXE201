@@ -17,5 +17,5 @@ export class CreateOrderDto {
 
   @IsOptional()
   @IsBoolean()
-  isInCart?: Boolean;
+  isInCart?: boolean;
 }

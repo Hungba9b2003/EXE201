@@ -15,8 +15,12 @@ const ProductManagement = () => {
     }, []);
 
     const fetchProducts = async () => {
-        const response = await axios.get('http://localhost:5000/api/products/get-all');
-        setProducts(response.data);
+        try {
+            const response = await axios.get('http://localhost:5000/api/products/get-all');
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
     };
 
     const handleAdd = () => {
@@ -31,18 +35,14 @@ const ProductManagement = () => {
 
     const handleDelete = async (productId) => {
         try {
-          const response = await axios.delete(`http://localhost:5000/api/products/${productId}`, {
-            headers: { 
-              Authorization: `Bearer ${accessToken}`,
-            },
-          });
-          fetchProducts();
+            await axios.delete(`http://localhost:5000/api/products/${productId}`, {
+                headers: { Authorization: `Bearer ${accessToken}` },
+            });
+            fetchProducts();
         } catch (error) {
-          console.error('There was an error deleting the product!', error.message);
-          console.error('Error details:', error.config);
+            console.error('Error deleting product:', error);
         }
-      };
-      
+    };
 
     const columns = [
         {
@@ -50,49 +50,92 @@ const ProductManagement = () => {
             dataIndex: 'images',
             key: 'images',
             render: (images) => (
-                <img src={images[0] ? images[0] : 'https://via.placeholder.com/444'} alt="product" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
-
+                <img
+                    src={images?.[0] || 'https://via.placeholder.com/50'}
+                    alt='product'
+                    style={{ width: 50, height: 50, objectFit: 'cover' }}
+                />
             ),
         },
-        { 
-            title: 'Tên sản phẩm', 
-            dataIndex: 'name', 
-            key: 'name', 
-            render: text => <span style={{ fontWeight: '600', color: '#333' }}>{text}</span> 
+        {
+            title: 'Tên sản phẩm',
+            dataIndex: 'name',
+            key: 'name',
+            render: (text) => <span style={{ fontWeight: 600, color: '#333' }}>{text}</span>,
         },
-        { 
-            title: 'Giá nguyên bản (VND)', 
-            dataIndex: 'originalPrice', 
-            key: 'originalPrice', 
-            render: text => <span style={{ color: '#ff0000', textDecoration: 'line-through' }}>{formatPrice(text)}</span> 
+        {
+            title: 'Giá nguyên bản (VND)',
+            dataIndex: 'originalPrice',
+            key: 'originalPrice',
+            render: (text) => (
+                <span style={{ color: '#ff0000', textDecoration: 'line-through' }}>
+                    {formatPrice(text)}
+                </span>
+            ),
         },
-        { 
-            title: 'Giá bán (VND)', 
-            dataIndex: 'salePrice', 
-            key: 'salePrice', 
-            render: text => <span style={{ color: 'black',fontWeight: '600' }}>{formatPrice(text)}</span> 
+        {
+            title: 'Giá bán (VND)',
+            dataIndex: 'salePrice',
+            key: 'salePrice',
+            render: (text) => (
+                <span style={{ color: 'black', fontWeight: 600 }}>{formatPrice(text)}</span>
+            ),
         },
         {
             title: 'Actions',
             key: 'actions',
-            render: (text, record) => (
+            render: (_, record) => (
                 <span>
-                    <Button type='link'style={{ color:'white' ,background:'black' , borderRadius:'0px', marginBottom:"10px"  ,right :"20px" }} onClick={() => handleEdit(record)}>Sửa</Button>
-                    <Button type='link' style={{ color:'black' ,background:'white' , borderRadius:'0px', marginBottom:"10px"  ,right :"20px",border:'1px solid black' }} danger onClick={() => handleDelete(record._id)}>Xóa</Button>
+                    <Button
+                        type='link'
+                        style={{
+                            color: 'white',
+                            background: 'black',
+                            borderRadius: 0,
+                            marginBottom: 10,
+                            marginRight: 10,
+                        }}
+                        onClick={() => handleEdit(record)}
+                    >
+                        Sửa
+                    </Button>
+                    <Button
+                        type='link'
+                        style={{
+                            color: 'black',
+                            background: 'white',
+                            borderRadius: 0,
+                            marginBottom: 10,
+                            border: '1px solid black',
+                        }}
+                        danger
+                        onClick={() => handleDelete(record._id)}
+                    >
+                        Xóa
+                    </Button>
                 </span>
             ),
         },
     ];
 
     return (
-        <div style={{  }}>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '10px' }}>
-                <Button  onClick={handleAdd} style={{ color:'white' ,background:'black' , borderRadius:'0px', marginBottom:"10px"  ,right :"20px" }} >Thêm sản phẩm mới </Button>
+        <div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
+                <Button
+                    onClick={handleAdd}
+                    style={{ color: 'white', background: 'black', borderRadius: 0 }}
+                >
+                    Thêm sản phẩm mới
+                </Button>
             </div>
-            <Table columns={columns} dataSource={products} rowKey='_id' />
+            <Table
+                columns={columns}
+                dataSource={products}
+                rowKey='_id'
+            />
             <Modal
-                title={selectedProduct ? 'Sửa sản phẩm' : 'Thêm sản phẩm '}
-                visible={visible}
+                title={selectedProduct ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}
+                open={visible}
                 onCancel={() => setVisible(false)}
                 footer={null}
             >

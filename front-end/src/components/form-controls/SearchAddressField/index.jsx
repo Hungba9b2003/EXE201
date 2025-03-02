@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { AutoComplete } from "antd";
-import { useField, useFormikContext } from "formik";
-import axios from "axios";
+import React, { useEffect, useState } from 'react';
+import { AutoComplete } from 'antd';
+import { useField, useFormikContext } from 'formik';
+import axios from 'axios';
 
 const SearchAddressField = ({ name, ...props }) => {
     const [field, meta, helpers] = useField(name);
     const [options, setOptions] = useState([]);
-    const [inputValue, setInputValue] = useState(field.value || "");
+    const [inputValue, setInputValue] = useState(field.value || '');
 
     const { setFieldValue, setFieldTouched } = useFormikContext();
 
@@ -14,7 +14,7 @@ const SearchAddressField = ({ name, ...props }) => {
         if (inputValue) {
             axios
                 .get(
-                    `https://rsapi.goong.io/place/autocomplete?input=${inputValue}&api_key=TdpeykZUUxLdwjL0YR7ygbi0G8Jmk3TjBn8nkCuG`
+                    `https://rsapi.goong.io/place/autocomplete?input=${inputValue}&api_key=TdpeykZUUxLdwjL0YR7ygbi0G8Jmk3TjBn8nkCuG`,
                 )
                 .then((response) => {
                     const locations = response.data.predictions;
@@ -24,7 +24,7 @@ const SearchAddressField = ({ name, ...props }) => {
                     setOptions(options);
                 })
                 .catch((error) => {
-                    console.log("error :", error);
+                    console.log('error :', error);
                 });
         }
     }, [inputValue]);
@@ -43,9 +43,9 @@ const SearchAddressField = ({ name, ...props }) => {
     return (
         <AutoComplete
             {...props}
-            style={{ width: "100%",fontFamily: 'monospace',height: "58px" }}
+            style={{ width: '100%', fontFamily: 'monospace', height: '58px' }}
             options={options}
-            placeholder="Phường/Xã....Quận/Huyện....Thành Phố/Tỉnh"
+            placeholder='Phường/Xã....Quận/Huyện....Thành Phố/Tỉnh'
             filterOption={(inputValue, option) =>
                 option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
             }

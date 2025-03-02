@@ -17,9 +17,10 @@ const OrderHistory = () => {
         const fetchOrderHistory = async () => {
             try {
                 const orderData = await orderApi.getOrderHistory(userId);
-                const sortedOrders = orderData.sort((a, b) => new Date(b.orderDate) - new Date(a.orderDate));
+                const sortedOrders = orderData.sort(
+                    (a, b) => new Date(b.orderDate) - new Date(a.orderDate),
+                );
                 setOrders(sortedOrders);
-                
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -57,16 +58,15 @@ const OrderHistory = () => {
     };
 
     const renderPaymentStatus = (status) => {
-      switch (status) {
-          case 'Pending':
-              return 'Chưa thanh toán';
-          case 'Success':
-              return 'Đã thanh toán';
-          default:
-              return status;
-      }
-  };
-  
+        switch (status) {
+            case 'Pending':
+                return 'Chưa thanh toán';
+            case 'Success':
+                return 'Đã thanh toán';
+            default:
+                return status;
+        }
+    };
 
     const renderShippingStatus = (status) => {
         switch (status) {
@@ -101,11 +101,18 @@ const OrderHistory = () => {
     };
 
     if (loading) {
-        return <Spin tip="Đang tải lịch sử đặt hàng..." />;
+        return <Spin tip='Đang tải lịch sử đặt hàng...' />;
     }
 
     if (error) {
-        return <Alert message="Lỗi" description={error} type="error" showIcon />;
+        return (
+            <Alert
+                message='Lỗi'
+                description={error}
+                type='error'
+                showIcon
+            />
+        );
     }
 
     return (
@@ -116,28 +123,46 @@ const OrderHistory = () => {
             <List
                 grid={{ gutter: 16, column: 1 }}
                 dataSource={orders}
-                renderItem={order => (
+                renderItem={(order) => (
                     <List.Item>
                         <Card
                             bordered={false}
                             style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
                         >
-                            <Row justify="space-between" align="middle">
+                            <Row
+                                justify='space-between'
+                                align='middle'
+                            >
                                 <Col>
-                                    <h3 style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>Mã đơn hàng: {order._id}</h3>
+                                    <h3 style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>
+                                        Mã đơn hàng: {order._id}
+                                    </h3>
                                 </Col>
                                 <Col>
                                     <Typography.Link
                                         onClick={() => showModal(order)}
-                                        style={{ textDecoration: 'underline', color: 'black', fontWeight: 'bold' }}
+                                        style={{
+                                            textDecoration: 'underline',
+                                            color: 'black',
+                                            fontWeight: 'bold',
+                                        }}
                                     >
                                         Xem chi tiết
                                     </Typography.Link>
                                 </Col>
                             </Row>
-                            <p style={{ fontWeight: 'bold' }}>Ngày đặt hàng: {formatDate(new Date(order.orderDate), 'dd/MM/yyyy', { locale: vi })}</p>
-                            <p style={{ fontWeight: 'bold' }}>Trạng thái vận chuyển: {renderShippingStatus(order.shippingStatus)}</p>
-                            <p style={{ fontWeight: 'bold' }}>Tổng giá trị: {formatPrice(order.totalAmount)}</p>
+                            <p style={{ fontWeight: 'bold' }}>
+                                Ngày đặt hàng:{' '}
+                                {formatDate(new Date(order.orderDate), 'dd/MM/yyyy', {
+                                    locale: vi,
+                                })}
+                            </p>
+                            <p style={{ fontWeight: 'bold' }}>
+                                Trạng thái vận chuyển: {renderShippingStatus(order.shippingStatus)}
+                            </p>
+                            <p style={{ fontWeight: 'bold' }}>
+                                Tổng giá trị: {formatPrice(order.totalAmount)}
+                            </p>
                         </Card>
                     </List.Item>
                 )}
@@ -154,31 +179,65 @@ const OrderHistory = () => {
                         bordered={false}
                         style={{ boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
                     >
-                        <p style={{ fontWeight: 'bold' }}>Ngày đặt hàng: {formatDate(new Date(selectedOrder.orderDate), 'dd/MM/yyyy', { locale: vi })}</p>
-                        <p style={{ fontWeight: 'bold' }}>Trạng thái: {renderStatus(selectedOrder.status)}</p>
-                        <p style={{ fontWeight: 'bold' }}>Trạng thái vận chuyển: {renderShippingStatus(selectedOrder.shippingStatus)}</p>
-                        <p style={{ fontWeight: 'bold' }}>Trạng thái thanh toán: {renderPaymentStatus(selectedOrder.paymentStatus)}</p>
+                        <p style={{ fontWeight: 'bold' }}>
+                            Ngày đặt hàng:{' '}
+                            {formatDate(new Date(selectedOrder.orderDate), 'dd/MM/yyyy', {
+                                locale: vi,
+                            })}
+                        </p>
+                        <p style={{ fontWeight: 'bold' }}>
+                            Trạng thái: {renderStatus(selectedOrder.status)}
+                        </p>
+                        <p style={{ fontWeight: 'bold' }}>
+                            Trạng thái vận chuyển:{' '}
+                            {renderShippingStatus(selectedOrder.shippingStatus)}
+                        </p>
+                        <p style={{ fontWeight: 'bold' }}>
+                            Trạng thái thanh toán:{' '}
+                            {renderPaymentStatus(selectedOrder.paymentStatus)}
+                        </p>
                         {/* <p style={{ fontWeight: 'bold' }}>Phương thức thanh toán: {renderPaymentMethod(selectedOrder.paymentMethod)}</p> */}
-                        <p style={{ fontWeight: 'bold' }}>Tổng giá trị: {formatPrice(selectedOrder.totalAmount)}</p>
+                        <p style={{ fontWeight: 'bold' }}>
+                            Tổng giá trị: {formatPrice(selectedOrder.totalAmount)}
+                        </p>
                         <p style={{ fontWeight: 'bold' }}>Danh sách sản phẩm:</p>
                         <ul>
-                            {selectedOrder.products.map(item => (
-                                <li key={item.productId} style={{ marginBottom: '10px' ,marginLeft:'20px'}}>
+                            {selectedOrder.products.map((item) => (
+                                <li
+                                    key={item.productId}
+                                    style={{ marginBottom: '10px', marginLeft: '20px' }}
+                                >
                                     <img
                                         src={item.urlImage}
-                                        alt="Product"
-                                        style={{ width: '50px', height: '50px', marginRight: '10px' }}
+                                        alt='Product'
+                                        style={{
+                                            width: '50px',
+                                            height: '50px',
+                                            marginRight: '10px',
+                                        }}
                                     />
+
                                     <span>Số lượng: {item.quantity}</span>
                                     <br />
+
+                                    <span>Size: {item.size}</span>
+                                    <br />
+
                                     <span>Giá sản phẩm: {formatPrice(item.price)}</span>
                                 </li>
                             ))}
                         </ul>
-                        <p style={{ fontWeight: '600'  }}>Thông tin vận chuyển:</p>
-                        <p style={{ fontWeight: 'bold', marginLeft:'20px' }}>Người nhận: {selectedOrder.shippingInfo.receiver}</p>
-                        <p style={{ fontWeight: 'bold', marginLeft:'20px' }}>Điện thoại: {selectedOrder.shippingInfo.phone}</p>
-                        <p style={{ fontWeight: 'bold', marginLeft:'20px' }}>Địa chỉ: {selectedOrder.shippingInfo.address}, {selectedOrder.shippingInfo.addressDetail}</p>
+                        <p style={{ fontWeight: '600' }}>Thông tin vận chuyển:</p>
+                        <p style={{ fontWeight: 'bold', marginLeft: '20px' }}>
+                            Người nhận: {selectedOrder.shippingInfo.receiver}
+                        </p>
+                        <p style={{ fontWeight: 'bold', marginLeft: '20px' }}>
+                            Điện thoại: {selectedOrder.shippingInfo.phone}
+                        </p>
+                        <p style={{ fontWeight: 'bold', marginLeft: '20px' }}>
+                            Địa chỉ: {selectedOrder.shippingInfo.address},{' '}
+                            {selectedOrder.shippingInfo.addressDetail}
+                        </p>
                     </Card>
                 </Modal>
             )}

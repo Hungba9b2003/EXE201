@@ -10,7 +10,7 @@ import { logout } from '../../pages/Auth/userSlice';
 import SearchComponent from '../../pages/Product/components/Search';
 import '../Header/style.scss';
 import { cartItemsCountSelector } from '../../pages/Cart/selectors';
-
+import { setCartItems } from '../../pages/Cart/cartSlice';
 function Header(props) {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -20,8 +20,7 @@ function Header(props) {
     const dispatch = useDispatch();
     const [cartList, setCartList] = useState([]);
     const [userId, setUserId] = useState();
-    const [cartItemsCount, setCartItemsCount] = useState();
-
+    const cartItemsCount = useSelector((state) => state.cart.cartItemsCount);
     useEffect(() => {
         const userId = localStorage.getItem('userId');
         const userRole = localStorage.getItem('role');
@@ -41,13 +40,12 @@ function Header(props) {
         (async () => {
             try {
                 const cartList = await cartsApi.getAll(userId);
-                setCartItemsCount(cartList.length);
-                setCartList(cartList);
+                dispatch(setCartItems(cartList)); // ✅ Cập nhật Redux thay vì setCartItemsCount
             } catch (error) {
                 console.log('Failed to fetch carts list', error);
             }
         })();
-    }, [userId]);
+    }, [userId, dispatch]);
 
     const handleSearchClick = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -146,6 +144,7 @@ function Header(props) {
                                     ></box-icon>
                                 </IconButton>
                                 <IconButton
+                                    size='large'
                                     color='inherit'
                                     onClick={handleUserClick}
                                 >
@@ -174,6 +173,7 @@ function Header(props) {
                                     </Badge>
                                 </IconButton>
                                 <IconButton
+                                    size='large'
                                     color='inherit'
                                     onClick={handleUserClick}
                                 >

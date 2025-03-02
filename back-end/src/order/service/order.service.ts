@@ -33,6 +33,7 @@ export class OrderService {
 
   async createOrder(createOrderDto: CreateOrderDto) {
     let totalAmount = 0;
+    console.log('Hung' + createOrderDto);
     let productIds = [];
     createOrderDto.products.forEach((product) => {
       totalAmount += product.quantity * product.price;

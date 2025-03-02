@@ -18,22 +18,32 @@ const cartSlice = createSlice({
         hideMiniCart(state) {
             state.showMiniCart = false;
         },
-
-        addToCart(state, action) {
-            // newItems = { id , product , quantity}
-            const newItem = action.payload;
-            const index = state.cartItems.findIndex(
-                (x) => x.id === newItem.id && x.size === newItem.size,
-            );
-            if (index >= 0) {
-                // increase quantity
-                state.cartItems[index].quantity += newItem.quantity;
-            } else {
-                //add to cart
-                state.cartItems.push(newItem);
-            }
-            localStorage.setItem('cart', JSON.stringify(state.cartItems));
+        addToCart: (state, action) => {
+            state.cartItems.push(action.payload);
+            state.cartItemsCount += action.payload.quantity; // Cập nhật số lượng
         },
+
+        setCartItems: (state, action) => {
+            console.log();
+            state.cartItems = action.payload;
+            state.cartItemsCount = action.payload.length;
+        },
+
+        // addToCart(state, action) {
+        //     // newItems = { id , product , quantity}
+        //     const newItem = action.payload;
+        //     const index = state.cartItems.findIndex(
+        //         (x) => x.id === newItem.id && x.size === newItem.size,
+        //     );
+        //     if (index >= 0) {
+        //         // increase quantity
+        //         state.cartItems[index].quantity += newItem.quantity;
+        //     } else {
+        //         //add to cart
+        //         state.cartItems.push(newItem);
+        //     }
+        //     localStorage.setItem('cart', JSON.stringify(state.cartItems));
+        // },
 
         setQuantity(state, action) {
             const { id, quantity } = action.payload;
@@ -59,7 +69,14 @@ const cartSlice = createSlice({
 // Redux tự định nghĩa actions và reducer
 const { actions, reducer } = cartSlice;
 // Trong actions thì có showMiniCart,hideMiniCart,addToCart,setQuantity,removeFromCart
-export const { showMiniCart, hideMiniCart, addToCart, setQuantity, removeFromCart, removeItem } =
-    actions;
+export const {
+    showMiniCart,
+    setCartItems,
+    hideMiniCart,
+    addToCart,
+    setQuantity,
+    removeFromCart,
+    removeItem,
+} = actions;
 
 export default reducer;

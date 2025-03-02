@@ -246,6 +246,15 @@ const OrderPage = () => {
                                             variant='h7'
                                             style={{ fontFamily: 'monospace' }}
                                         >
+                                            Kích thước
+                                        </Typography>
+                                    </Box>
+                                    <Box style={{ width: '20%', textAlign: 'center' }}>
+                                        <Typography
+                                            component='h3'
+                                            variant='h7'
+                                            style={{ fontFamily: 'monospace' }}
+                                        >
                                             Thành tiền
                                         </Typography>
                                     </Box>
@@ -318,6 +327,17 @@ const OrderPage = () => {
                                                 width: '20%',
                                             }}
                                         >
+                                            <Typography variant='body2'>{item.size}</Typography>
+                                        </Box>
+                                        <Box
+                                            style={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                width: '20%',
+                                            }}
+                                        >
                                             <Typography
                                                 variant='body2'
                                                 style={{ fontWeight: '600' }}
@@ -379,7 +399,7 @@ const OrderPage = () => {
                                                         value={values.paymentMethod}
                                                         onChange={handleChange}
                                                     >
-                                                        <FormControlLabel
+                                                        {/* <FormControlLabel
                                                             value='payment'
                                                             control={<CustomRadio />}
                                                             label={
@@ -407,7 +427,7 @@ const OrderPage = () => {
                                                                     </Box>
                                                                 </Box>
                                                             }
-                                                        />
+                                                        /> */}
                                                         <FormControlLabel
                                                             value='cash'
                                                             control={<CustomRadio />}

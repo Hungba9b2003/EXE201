@@ -62,18 +62,9 @@ export class CartRepository {
     return await this.cartModel.findByIdAndDelete(cartId);
   }
 
-  async updateCartQuantity(
-    productId: ObjectId,
-    userId: ObjectId,
-    quantity: number,
-    size: string,
-  ) {
+  async updateCartQuantity(cartId: ObjectId, quantity: number) {
     return this.cartModel
-      .findOneAndUpdate(
-        { productId, userId, size },
-        { $inc: { quantity } },
-        { new: true },
-      )
+      .findOneAndUpdate({ _id: cartId }, { quantity: quantity }, { new: true })
       .exec();
   }
 }

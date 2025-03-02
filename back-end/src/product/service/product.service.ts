@@ -99,8 +99,8 @@ export class ProductService {
   }
 
   async createProduct(createProductDto: CreateProductDto) {
-    const typeIdObject = new Types.ObjectId(createProductDto.typeId);
-    const data = { ...createProductDto, typeId: typeIdObject };
+    // const typeIdObject = new Types.ObjectId(createProductDto.typeId);
+    const data = { ...createProductDto };
     try {
       const Newproduct = await this.productRepository.create(data);
       return {

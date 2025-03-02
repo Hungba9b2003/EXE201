@@ -22,7 +22,6 @@
 //     const { errors } = form;
 //     const hasError = !! errors[name];
 
-
 //     return (
 
 //             <FormControl
@@ -43,8 +42,8 @@
 //                     //     border:'none',
 //                     //     outline: 'none',
 //                     //     // border:'2px solid rgba(255,255,255,2)',
-//                     //     borderRadius: '40px', 
-//                     // }} 
+//                     //     borderRadius: '40px',
+//                     // }}
 //                 />
 //             </FormControl>
 //     );
@@ -67,16 +66,16 @@ QuantityField.propTypes = {
     disabled: PropTypes.bool,
 };
 
-const useStyles = makeStyles((theme)=> ({
-    root:{},
+const useStyles = makeStyles((theme) => ({
+    root: {},
 
     box: {
-        display:'flex',
-        alignItems:'center',
-        justifyContent:'space-between',
-        maxWidth:'200px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        maxWidth: '200px',
     },
-}))
+}));
 
 function QuantityField(props) {
     const classes = useStyles();
@@ -95,11 +94,17 @@ function QuantityField(props) {
             <Controller
                 name={name}
                 control={form.control}
-                render={({ onChange , onBlur ,value ,name }) => (
-                    <Box 
-                        className={classes.box}
-                    >
-                        <IconButton onClick={() => setValue(name, Number.parseInt(value) ? Number.parseInt(value) - 1: 1)}>
+                render={({ onChange, onBlur, value, name }) => (
+                    <Box className={classes.box}>
+                        <IconButton
+                            size='medium'
+                            onClick={() =>
+                                setValue(
+                                    name,
+                                    Number.parseInt(value) ? Number.parseInt(value) - 1 : 1,
+                                )
+                            }
+                        >
                             <RemoveCircleOutline />
                         </IconButton>
                         <OutlinedInput
@@ -110,7 +115,15 @@ function QuantityField(props) {
                             onChange={onChange}
                             onBlur={onBlur}
                         />
-                        <IconButton onClick={() => setValue(name,Number.parseInt(value) ? Number.parseInt(value) + 1: 1)}>
+                        <IconButton
+                            size='medium'
+                            onClick={() =>
+                                setValue(
+                                    name,
+                                    Number.parseInt(value) ? Number.parseInt(value) + 1 : 1,
+                                )
+                            }
+                        >
                             <AddCircleOutline />
                         </IconButton>
                     </Box>

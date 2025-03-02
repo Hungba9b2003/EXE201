@@ -9,7 +9,7 @@ import cartsApi from '../../../api/cartApi';
 import orderApi from '../../../api/ordersApi';
 import userApi from '../../../api/userApi';
 import { discountPercentage, formatPrice } from '../../../utils/common';
-import { addToCart } from '../../Cart/cartSlice';
+import { addToCart, setCartItems } from '../../Cart/cartSlice';
 
 ProductInfo.propTypes = {
     product: PropTypes.object,
@@ -161,21 +161,16 @@ function ProductInfo({ product = {} }) {
             return;
         }
         try {
-            console.log(selectedSize);
-            const req = await cartsApi.add(payload);
-            console.log(payload);
-            const action = addToCart({
-                id: product._id,
-                size: selectedSize,
-                product,
-                quantity: 1,
-            });
-            console.log(action);
-            dispatch(action);
-            enqueueSnackbar('Đã thêm vào giỏ hàng  ', { variant: 'success' });
+            await cartsApi.add(payload);
+            const cartList = await cartsApi.getAll(userId);
+
+            // Cập nhật Redux store với danh sách giỏ hàng mới
+            dispatch(setCartItems(cartList));
+
+            enqueueSnackbar('Đã thêm vào giỏ hàng', { variant: 'success' });
         } catch (error) {
             console.error('Add to cart failed:', error);
-            enqueueSnackbar('Đã xảy ra lỗi ! ', { variant: 'error' });
+            enqueueSnackbar('Đã xảy ra lỗi!', { variant: 'error' });
         }
     };
 

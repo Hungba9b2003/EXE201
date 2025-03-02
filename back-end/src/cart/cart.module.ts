@@ -24,6 +24,7 @@ export class CartModule implements NestModule {
     consumer
       .apply(VerifyTokenMiddleware)
       .forRoutes(
+        { path: 'carts/quantity', method: RequestMethod.PUT },
         { path: 'carts/user/:userId', method: RequestMethod.PUT },
         { path: 'carts', method: RequestMethod.POST },
       );

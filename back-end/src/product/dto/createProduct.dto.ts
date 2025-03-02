@@ -1,9 +1,22 @@
-import { IsNotEmpty, IsNumber, IsString, isString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsArray,
+  IsMongoId,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true }) // Đảm bảo mỗi phần tử trong mảng là string
+  images: string[];
 
   @IsNotEmpty()
   @IsString()
@@ -21,25 +34,24 @@ export class CreateProductDto {
   @IsNumber()
   salePrice: number;
 
-  @IsNotEmpty()
-  @IsNumber()
-  dialSize: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  thickness: number;
+  @IsArray()
+  sizes: { size: string; quantity: number }[];
 
   @IsNotEmpty()
   @IsString()
-  dialColor: string;
+  material: string;
 
   @IsNotEmpty()
   @IsString()
-  movementType: string;
+  color: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  strapSize: number;
+  @IsString()
+  pattern: string;
+
+  @IsNotEmpty()
+  @IsString()
+  season: string;
 
   @IsNotEmpty()
   @IsString()
@@ -47,22 +59,13 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   @IsString()
-  glassMaterial: string;
+  closureType: string;
 
   @IsNotEmpty()
   @IsString()
-  strapMaterial: string;
+  stretch: string;
 
-  @IsNotEmpty()
-  @IsString()
-  typeId: string;
+  @IsOptional()
+  @IsEnum(['dog', 'cat', 'other'])
+  category: string;
 }
-
-// dialSize (Kích thước mặt)
-// thickness (Độ dày)
-// dialColor (Màu mặt)
-// movementType (Loại máy)
-// strapSize (Kích cỡ dây)
-// waterResistance (Chống nước)
-// glassMaterial (Mặt kính)
-// strapMaterial (Chất liệu dây)

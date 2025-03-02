@@ -16,7 +16,7 @@ import SearchAddressField from '../../components/form-controls/SearchAddressFiel
 import { removeFromCart } from './cartSlice';
 import CartClear from './components/CartClear';
 import { cartItemsCountSelector, cartTotalSelector } from './selectors';
-
+import axios from 'axios';
 const CustomRadio = styled(Radio)({
     '&.Mui-checked': {
         color: 'black',
@@ -171,6 +171,7 @@ function CartPages(props) {
                 })),
             );
         }
+
         // console.log(cartList);
         // Cập nhật trạng thái "Chọn tất cả"
         setSelectAll(!selectAll);
@@ -227,7 +228,7 @@ function CartPages(props) {
     //=================================================================================================================================
 
     // Tính tổngg sản phẩm , giá trong giỏ hàng từ Redux
-    const cartItemsCount = useSelector(cartItemsCountSelector);
+    const [cartItemsCount, setCartItemCount] = useState();
     const cartItemsTotal = useSelector(cartTotalSelector);
     const [cartList, setCartList] = useState([]);
 
@@ -273,6 +274,7 @@ function CartPages(props) {
                 ]);
 
                 setCartList(cartList);
+                setCartItemCount(cartList.length);
                 setFormData(userData);
             } catch (error) {
                 console.log('Failed to fetch data', error);
@@ -333,6 +335,7 @@ function CartPages(props) {
     //             enqueueSnackbar('Đã xảy ra lỗi! Vui lòng thử lại sau.', { variant: 'error' });
     //         }
     //     };
+
     const handleBuyNow = async (values) => {
         const shippingInfo = {
             receiver: values.displayName,
@@ -343,14 +346,16 @@ function CartPages(props) {
         };
 
         const updatedProducts = selectedProducts.map((selectedProduct) => {
-            const cartItem = cartList.find((item) =>
-                item.product.some((product) => product._id === selectedProduct._id),
+            const cartItem = cartList.find(
+                (item) => item._id === selectedProduct._id && item.size === selectedProduct.size,
             );
+            // console.log(selectedProduct);
             return {
-                productId: selectedProduct._id,
-                price: selectedProduct.salePrice,
+                productId: selectedProduct.product[0]._id,
+                price: selectedProduct.product[0].salePrice,
+                size: selectedProduct.size,
                 quantity: cartItem.quantity, // Cập nhật số lượng từ cartList
-                urlImage: selectedProduct.images[0],
+                urlImage: selectedProduct.product[0].images[0],
             };
         });
 
@@ -367,30 +372,81 @@ function CartPages(props) {
         }
         try {
             const req = await orderApi.add(payloadPay);
+            console.log(req);
+
             navigate(`/orders?id=${req.orderExist._id}`);
         } catch (error) {
             enqueueSnackbar('Đã xảy ra lỗi! Vui lòng thử lại sau.', { variant: 'error' });
         }
     };
 
-    const handleIncreaseQuantity = (id, size) => {
-        setCartList(
-            cartList.map((item) =>
-                item._id === id && item.size === size
-                    ? { ...item, quantity: item.quantity + 1 }
-                    : item,
-            ),
-        );
+    const handleIncreaseQuantity = async (id, size) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            const updatedCartList = await Promise.all(
+                cartList.map(async (item) => {
+                    if (item._id === id && item.size === size) {
+                        const updatedQuantity = item.quantity + 1;
+                        // Gọi API và chờ kết quả
+                        await axios
+                            .put(
+                                `http://localhost:5000/api/carts/quantity`,
+                                {
+                                    cartId: id,
+                                    quantity: updatedQuantity,
+                                },
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`,
+                                        'Content-Type': 'application/json',
+                                    },
+                                },
+                            )
+                            // .then((res) => console.log('Response:', res))
+                            .catch((err) => console.error('API Error:', err.response?.data));
+                        return { ...item, quantity: updatedQuantity };
+                    }
+                    return item;
+                }),
+            );
+
+            // Cập nhật state sau khi API gọi thành công
+            setCartList(updatedCartList);
+        } catch (error) {
+            console.error('Error updating cart quantity:', error);
+        }
     };
 
-    const handleDecreaseQuantity = (id, size) => {
-        setCartList(
-            cartList.map((item) =>
-                item._id === id && item.size === size && item.quantity > 1
-                    ? { ...item, quantity: item.quantity - 1 }
-                    : item,
-            ),
+    const handleDecreaseQuantity = async (id, size) => {
+        const token = localStorage.getItem('access_token');
+        const updatedCartList = await Promise.all(
+            cartList.map(async (item) => {
+                if (item._id === id && item.size === size) {
+                    const updatedQuantity = item.quantity - 1;
+                    // Gọi API và chờ kết quả
+                    await axios
+                        .put(
+                            `http://localhost:5000/api/carts/quantity`,
+                            {
+                                cartId: id,
+                                quantity: updatedQuantity,
+                            },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                    'Content-Type': 'application/json',
+                                },
+                            },
+                        )
+                        .catch((err) => console.error('API Error:', err.response?.data));
+                    return { ...item, quantity: updatedQuantity };
+                }
+                return item;
+            }),
         );
+
+        // Cập nhật state sau khi API gọi thành công
+        setCartList(updatedCartList);
     };
 
     const totalAmount = selectedProducts.reduce((total, selectedProduct) => {
@@ -451,7 +507,7 @@ function CartPages(props) {
                                                         Địa chỉ ( quận , thành phố )
                                                     </Typography>
                                                     <Field
-                                                        as={SearchAddressField}
+                                                        as={TextField}
                                                         name='address'
                                                         className={classes.input}
                                                         variant='outlined'
@@ -638,6 +694,7 @@ function CartPages(props) {
                                             </Box>
                                             <Box style={{ display: 'flex', alignItems: 'center' }}>
                                                 <IconButton
+                                                    size='large'
                                                     onClick={() => handleRemoveItem(cartItem._id)}
                                                 >
                                                     <DeleteOutlineIcon />

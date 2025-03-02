@@ -30,4 +30,11 @@ export class CartController {
   deleteProductsInCart(@Body('cartId') cartId: string) {
     return this.cartService.deleteCartById(cartId);
   }
+  @Put('/quantity')
+  updateCartQuantity(
+    @Body('cartId') cartId: string,
+    @Body('quantity') quantity: number,
+  ) {
+    return this.cartService.updateCartQuantity(cartId, quantity);
+  }
 }

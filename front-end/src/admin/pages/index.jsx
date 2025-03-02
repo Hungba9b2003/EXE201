@@ -123,6 +123,7 @@ const AdminPage = () => {
                             <h1 style={{ fontFamily: 'monospace', margin: 0 }}>Admin CURNON</h1>
                         </div>
                         <IconButton
+                            size='medium'
                             color='inherit'
                             onClick={handleUserClick}
                         >
