@@ -35,6 +35,7 @@ function ListPage(props) {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                console.log(JSON.stringify(queryParams) + 'oke');
                 const data = await productsApi.getAll(queryParams);
                 setProductList(data.rows);
                 setTotalProducts(data.totalProducts);
@@ -71,7 +72,7 @@ function ListPage(props) {
     const handleCategoryChange = (newCategoryGender) => {
         const filters = {
             ...queryParams,
-            typeId: newCategoryGender,
+            category: newCategoryGender,
         };
 
         navigate({

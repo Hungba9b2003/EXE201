@@ -43,17 +43,15 @@ export class ProductRepository {
     return await this.productModel.find({ typeId: { $in: typeIds } });
   }
 
-  async getProductsByCategoryId(categoryId: string) {
-    return await this.productModel.aggregate([
-      {
-        $lookup: {
-          from: 'types',
-          localField: 'categoryIdString',
-          foreignField: 'categoyrId',
-          as: 'type',
-        },
-      },
-    ]);
+  async getProductsByCategory(category: string) {
+    try {
+      return await this.productModel.find({ category });
+    } catch (err) {
+      throw new HttpException(
+        'Find product by category error',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   async updateImagesOfProduct(productId: string, urlFiles: string[]) {

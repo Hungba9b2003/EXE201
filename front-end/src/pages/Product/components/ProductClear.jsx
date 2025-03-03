@@ -15,7 +15,7 @@ const ProductClear = () => {
             >
                 {/* <ShoppingCartIcon style={{ fontSize: 100, color: '#ccc' }} /> */}
                 <img
-                    src='https://scontent.fhan20-1.fna.fbcdn.net/v/t39.30808-6/480641541_122111190914740157_4987058906278223923_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=109&ccb=1-7&_nc_sid=127cfc&_nc_eui2=AeHeZZFo_J4v58P-Hwueh9qPNRgGS0KrmPw1GAZLQquY_Bhb6PlQvjXEJ7zWbqEewjo5uEamqYezz-cNtRGjKwdN&_nc_ohc=V4k5yVYWBpYQ7kNvgGwTvvX&_nc_oc=AdgkCdb9k2q_pXywhoOutzKAARgjEBbOE8CLo8NSSFGNKHvCd0lrlJqJ-uTOpa9ZrwA&_nc_zt=23&_nc_ht=scontent.fhan20-1.fna&_nc_gid=Ao9kwYAnxJdplUd4Jdt0ruD&oh=00_AYA7bYZY_DEy30sCJ_bOFno4MBrKAlxH3Ap7Avr_459A0A&oe=67C26610'
+                    src='https://static.thenounproject.com/png/1735753-200.png'
                     alt='empty'
                     className='empty__img'
                     width='160'

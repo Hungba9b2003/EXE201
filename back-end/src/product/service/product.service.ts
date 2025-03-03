@@ -28,8 +28,8 @@ export class ProductService {
     return await this.productRepository.getProductByTypeId(typeId);
   }
 
-  async getProductsByGender(categoryId: string) {
-    return await this.productRepository.getProductsByCategoryId(categoryId);
+  async getProductsByGender(category: string) {
+    return await this.productRepository.getProductsByCategory(category);
   }
 
   async updateImagesOfProduct(productId: string, urlFiles: string[]) {
@@ -54,37 +54,35 @@ export class ProductService {
 
   async getProductsByFilter(filter: any) {
     let products;
-    if (!filter.categoryId) {
+    if (!filter.category) {
       products = await this.productRepository.getAll();
     } else {
-      const types = await this.typeService.getTypesByCategoryId(
-        filter.categoryId,
+      products = await this.productRepository.getProductsByCategory(
+        filter.category,
       );
-
-      const typeIds = types.map((type) => type._id);
-
-      products = await this.productRepository.getProductByTypeIds(typeIds);
     }
-
     const totalProducts = products.length;
-
     const filteredProducts = products.filter((product) => {
       return (
         (filter.typeId == null || product.typeId.toString() == filter.typeId) &&
-        (filter.dialColor == null || product.dialColor == filter.dialColor) &&
-        (filter.dialSize == null || product.dialSize == filter.dialSize) &&
-        (filter.strapMaterial == null ||
-          product.strapMaterial == filter.strapMaterial)
+        (filter.color == null || product.color == filter.color) &&
+        (filter.size == null ||
+          product.sizes.some((s) => s.size === filter.size)) &&
+        (filter.material == null || product.material == filter.material) &&
+        (filter.pattern == null || product.pattern == filter.pattern) &&
+        (filter.season == null || product.season == filter.season) &&
+        (filter.waterResistance == null ||
+          product.waterResistance == filter.waterResistance) &&
+        (filter.closureType == null ||
+          product.closureType == filter.closureType) &&
+        (filter.stretch == null || product.stretch == filter.stretch)
       );
     });
-
     if (filter._sort) {
       const sortOrder = filter._sort === 'asc' ? 1 : -1;
       filteredProducts.sort((a, b) => sortOrder * (a.salePrice - b.salePrice));
     }
-
     const result = this.getProductsByPageNumber(filteredProducts, filter._page);
-
     return {
       rows: result,
       totalProducts,

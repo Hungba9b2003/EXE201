@@ -104,13 +104,13 @@ function Header(props) {
                 </a>
                 <a
                     style={{ '--i': 2 }}
-                    href='http://localhost:3000/products?_limit=16&_page=1&_sort=asc&categoryId=66968d748675a1be4a653de2'
+                    href='http://localhost:3000/products?_limit=16&_page=1&_sort=asc&category=dog'
                 >
                     CHO CHÓ
                 </a>
                 <a
                     style={{ '--i': 3 }}
-                    href='http://localhost:3000/products?_limit=16&_page=1&_sort=asc&categoryId=66969dec8675a1be4a653e01'
+                    href='http://localhost:3000/products?_limit=16&_page=1&_sort=asc&category=cat'
                 >
                     CHO MÈO
                 </a>
@@ -120,12 +120,12 @@ function Header(props) {
                 >
                     VỀ CHÚNG TÔI
                 </a>
-                <a
+                {/* <a
                     style={{ '--i': 5 }}
                     href='/blog'
                 >
                     BLOG
-                </a>
+                </a> */}
             </nav>
 
             <div className='wrapper__header__social-media'>

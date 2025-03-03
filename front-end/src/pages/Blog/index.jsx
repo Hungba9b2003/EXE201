@@ -30,11 +30,12 @@ function Blog(props) {
                                 ></img>
                                 {/* <h1 className='aban__title'>Chào bạn, chúng tôi là CURNON!</h1> */}
                                 <p className='aban__desc'>
-                                    Với mục đích truyền cảm hứng đến cho các bạn trẻ, đây là nơi
-                                    Curnon tâm sự, trò chuyện, chia sẻ những điều người trẻ đang
-                                    trăn trở, những câu chuyện truyền cảm hứng mang tinh thần "Why
-                                    not?", với hy vọng giúp các bạn thay đổi cách nhìn cũng như cách
-                                    giải quyết mọi vấn đề trong cuộc sống.
+                                    Mỗi sản phẩm phụ kiện thú cưng của chúng tôi không chỉ là một
+                                    thiết kế, mà còn là sự kết tinh của nhiệt huyết, khát khao và
+                                    sáng tạo từ những người trẻ Việt Nam. Với dịch vụ may đo và
+                                    chỉnh sửa theo yêu cầu, chúng tôi tin rằng tinh thần ‘Why not’
+                                    sẽ luôn đồng hành, truyền cảm hứng và giúp bạn cùng thú cưng tận
+                                    hưởng những khoảnh khắc đặc biệt mỗi ngày.
                                 </p>
                             </div>
                         </div>
@@ -79,7 +80,7 @@ function Blog(props) {
             </div>
 
             {/* Container 2 */}
-            <div className="wrapper__content">
+            <div className='wrapper__content'>
                 <PostList />
             </div>
 
