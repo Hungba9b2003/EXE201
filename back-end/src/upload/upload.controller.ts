@@ -13,7 +13,8 @@ import { TypeService } from 'src/type/service/type.service';
 import { Product } from '../product/schema/product.shema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
+import * as fs from 'fs';
+import * as path from 'path';
 @Controller('uploads')
 export class UploadController {
   constructor(
@@ -73,9 +74,30 @@ export class UploadController {
       if (!product) {
         return { success: false, message: 'Product not found' };
       }
-      // Xóa ảnh khỏi danh sách
+
+      // Xóa ảnh khỏi danh sách trong database
       product.images = product.images.filter((img) => img !== imageUrl);
       await product.save();
+
+      // Lấy tên file từ URL
+      const fileName = decodeURIComponent(
+        imageUrl.replace('http://localhost:5000/api/uploads/products/', ''),
+      );
+      console.log(fileName);
+      const filePath = path.join(
+        __dirname,
+        '..',
+        '..',
+        'uploads',
+        'products',
+        fileName,
+      );
+      console.log('filePath :', filePath);
+
+      // Kiểm tra nếu file tồn tại thì xóa
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
 
       return { success: true, message: 'Image deleted successfully' };
     } catch (error) {
