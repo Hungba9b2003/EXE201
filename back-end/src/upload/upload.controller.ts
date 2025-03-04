@@ -83,7 +83,6 @@ export class UploadController {
       const fileName = decodeURIComponent(
         imageUrl.replace('http://localhost:5000/api/uploads/products/', ''),
       );
-      console.log(fileName);
       const filePath = path.join(
         __dirname,
         '..',
@@ -92,7 +91,6 @@ export class UploadController {
         'products',
         fileName,
       );
-      console.log('filePath :', filePath);
 
       // Kiểm tra nếu file tồn tại thì xóa
       if (fs.existsSync(filePath)) {

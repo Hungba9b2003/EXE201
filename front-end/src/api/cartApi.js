@@ -28,6 +28,10 @@ const cartsApi = {
         return axiosClient.patch(url, data);
     },
 
+    updateQuantity(data){
+        const url = `api/carts/quantity`;
+        return axiosClient.put(url, data);
+    },
     delete(userId, cartId) {
         const url = `api/carts/user/${userId}`;
         return axiosClient.put(url, { cartId });
